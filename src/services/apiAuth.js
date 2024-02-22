@@ -1,14 +1,13 @@
 import supabase from "./supabase";
 
-// { firstName,lastName, dob, phoneNumber, address, email, password }
-export async function signUp() {
-    // console.log("APPP daat", firstName, lastName)
+export async function signUp({ firstName,lastName, dob, phoneNumber, address, email, password }) {
 
-    const { data, error } = await supabase.from('signUp').select('firstName', 'lastName').single();
-    // const { data, error } = await supabase.from('signUp').insert([
-    //     firstName, lastName, dob, phoneNumber, address, email, password
-    // ]);
-    console.log("DATAAAAAAA", data)
+    const { data, error } = await supabase
+    .from('signUp')
+    .insert([
+        { 'firstName' : firstName,lastName, dob, phoneNumber, address, email, password },
+    ])
+    .select()
     
     if (error) {
         throw new Error(error.message)
@@ -17,16 +16,15 @@ export async function signUp() {
 }
 
 export async function login({ email, password }) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    })
+    const { data, error } = await supabase.from('signUp').select(`email,password`).eq('email', email).single()
+
+    if(data.email == email && data.password == password){
+        return data;
+    }
 
     if (error) {
         throw new Error(error.message)
     }
-
-    return data
 }
 
 export async function signInWithDiscord() {

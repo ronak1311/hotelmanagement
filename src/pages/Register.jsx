@@ -5,22 +5,75 @@ import { useRegister } from "../hooks/useRegister";
 import toast from "react-hot-toast";
 
 function Register() {
-  const [email, setEmail] = useState("ronak@gmail.com");
-  const [firstName, setFirstname] = useState("Ronak");
-  const [lastName, setLastname] = useState("Gandhi");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstname] = useState("");
+  const [lastName, setLastname] = useState("");
   const [dob, setDOB] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("2222222222");
-  const [address, setAddress] = useState("aaaa");
-  const [password, setPassword] = useState("abcdef");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [password, setPassword] = useState("");
   const { isLoading, signUp } = useRegister();
 
   const onSubmitHandler = function (event) {
     event.preventDefault();
-
-    if (!email || !password){
-      toast.error("Email and Password required");
+    let isError = false;
+    if (!email && !password && !firstName && !lastName && !dob && !phoneNumber && !address){
+      toast.error("All the fields are required");
       return;
     } 
+
+    if(!firstName){
+      toast.error("First Name is required");
+      isError = true;
+    }
+
+    if(!lastName){
+      toast.error("Last Name is required");
+      isError = true;
+    }
+
+
+    if(!email){
+      toast.error("Email is required");
+      isError = true;
+    }
+
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if(!regex.test(email)) {
+          toast.error("Email must be in xyz@abc.com") 
+          isError = true;
+         }
+
+    if(!dob){
+      toast.error("Date of Birth is required");
+      isError = true;
+    }
+
+    if(!phoneNumber){
+      toast.error("Phonenumber is required");
+      isError = true;
+    }
+
+    const phoneRegex = /^\+1\d{10}$/;
+    if(!phoneRegex.test(phoneNumber)) {
+      toast.error("Phonenumber must be in +1XXXXXXXXXX Format");
+      isError = true;
+    }
+
+    if(!password){
+      toast.error("Password is required");
+      isError = true;
+    }
+
+    const passRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{6,})[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]+$/;
+    if(!passRegex.test(password)) {
+      toast.error("Password must be Alphanumeric with special character and 6 of length")
+      isError = true;
+    }
+
+
+    
+    if(isError) return;
 
     signUp({ firstName,lastName, dob, phoneNumber, address, email, password }, {
       onSettled: () => {

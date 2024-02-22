@@ -13,8 +13,8 @@ export function useRegister() {
         onSuccess: (user) => {
             queryClient.setQueryData(["user"], user.user)
 
-            toast.success("You've been successfully logged in"),
-                navigate("/dashboard", { replace: true })
+            toast.success("You've been successfully Registerd"),
+                navigate("/login", { replace: true })
         },
 
         onError: (error) => {
