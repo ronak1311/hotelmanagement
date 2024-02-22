@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useLogin } from "../hooks/useLogin";
 import { AiOutlineLogin } from "react-icons/ai"
 import { useNavigate } from "react-router-dom";
-import Spinner from "../ui/Spinner"
+import Spinner from "../ui/Spinner";
+import toast from "react-hot-toast";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,21 @@ function Login() {
   const onSubmitHandler = function (event) {
     event.preventDefault();
 
-    if (!email || !password) return;
+    if (!email || !password){
+      toast.error("Email and Password is required");
+      return;
+    } 
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!regex.test(email)) {
+       toast.error("Email must be in xyz@abc.com") 
+       return;
+      }
+      
+      const passRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{6,})[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]+$/;
+      if(!passRegex.test(password)) {
+        toast.error("Password must be Alphanumeric with special character and 6 of length")
+        return;
+      }
 
     login({ email, password }, {
       onSettled: () => {
