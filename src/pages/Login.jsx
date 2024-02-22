@@ -4,7 +4,6 @@ import { AiOutlineLogin } from "react-icons/ai"
 import { useNavigate } from "react-router-dom";
 import Spinner from "../ui/Spinner";
 import toast from "react-hot-toast";
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +22,7 @@ function Login() {
        toast.error("Email must be in xyz@abc.com") 
        return;
       }
-      
+
       const passRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{6,})[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]+$/;
       if(!passRegex.test(password)) {
         toast.error("Password must be Alphanumeric with special character and 6 of length")
