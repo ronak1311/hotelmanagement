@@ -1,24 +1,28 @@
 import { useState } from "react"
-import { useLogin } from "../hooks/useLogin";
 import { AiOutlineLogin } from "react-icons/ai";
 import Spinner from "../ui/Spinner";
+import { useRegister } from "../hooks/useRegister";
+import toast from "react-hot-toast";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstname] = useState("");
-  const [lastName, setLastname] = useState("");
+function Register() {
+  const [email, setEmail] = useState("ronak@gmail.com");
+  const [firstName, setFirstname] = useState("Ronak");
+  const [lastName, setLastname] = useState("Gandhi");
   const [dob, setDOB] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const { isLoading, login } = useLogin();
+  const [phoneNumber, setPhoneNumber] = useState("2222222222");
+  const [address, setAddress] = useState("aaaa");
+  const [password, setPassword] = useState("abcdef");
+  const { isLoading, signUp } = useRegister();
 
   const onSubmitHandler = function (event) {
     event.preventDefault();
 
-    if (!email || !password) return;
+    if (!email || !password){
+      toast.error("Email and Password required");
+      return;
+    } 
 
-    login({ email, password }, {
+    signUp({ firstName,lastName, dob, phoneNumber, address, email, password }, {
       onSettled: () => {
         setEmail("");
         setPassword("");
@@ -128,4 +132,4 @@ function Login() {
   )
 }
 
-export default Login
+export default Register

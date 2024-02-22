@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register.jsx";
 import PageNotFound from "./pages/PageNotFound";
@@ -21,6 +21,7 @@ function App() {
             <ReactQueryDevtools initialIsOpen={false} />
             <BrowserRouter>
                 <Routes>
+                    <Route path="/" element={<Login />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="*" element={<PageNotFound />} />
