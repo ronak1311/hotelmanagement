@@ -16,7 +16,7 @@ export async function signUp({ firstName,lastName, dob, phoneNumber, address, em
 }
 
 export async function login({ email, password }) {
-    const { data, error } = await supabase.from('signUp').select(`email,password`).eq('email', email).single()
+    const { data, error } = await supabase.from('signUp').select(`*`).eq('email', email).single()
 
     if(data.email == email && data.password == password){
         return data;
