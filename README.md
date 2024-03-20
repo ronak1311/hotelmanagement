@@ -1,32 +1,4 @@
-# itsteatv hotel
-***full-stack hotel with booking and cabin features***
-
-**Welcome to itsteatv hotel!**
-
-Experience the ultimate hotel management system, meticulously crafted with the latest web technologies to make your hotel stay exceptional. Our full-stack hotel application is designed to provide a seamless and enjoyable experience for both guests and hotel administrators. Here's what makes our hotel application stand out:
-
-**Cutting-Edge Front-End with ReactJS:** Our modern and intuitive front-end is built with ReactJS, ensuring a smooth and responsive user interface. Whether you're exploring room options, managing your bookings, or customizing your preferences, the power of ReactJS brings it all to life.
-
-**Robust Back-End with Supabase:** Behind the scenes, Supabase takes care of the heavy lifting. This powerful back-end solution ensures secure and efficient data storage, real-time updates, and authentication for users. Supabase allows us to provide a seamless booking experience, keeping you informed at all times.
-
-**Stunning User Interface with Tailwind CSS:** The user interface of our application is visually appealing and user-friendly, thanks to Tailwind CSS. It combines sleek designs with a responsive layout, making your navigation a breeze. Expect a smooth, elegant, and visually delightful experience.
-
-**Efficient State Management with React Query:** React Query enhances your experience with efficient state management, reducing loading times and offering real-time updates. It ensures that your data is always up-to-date, creating a seamless and dynamic booking process.
-
-**Hotel Features at Your Fingertips:**
-
--   **Booking Feature:** With just a few clicks, you can book your preferred room or cabin, choosing from a variety of options. Real-time availability and pricing information ensure you get the best deals. You can also check in your booking or delete it.
-    
--   **Cabin Management:** Have a change in plans? Our cabin management allows you to easily add, update, delete, or edit cabin details, giving you flexibility during your stay.
-    
--   **User Authentication:** Authenticated users can Securely create user profile and you can easily manage your personal account. Update your avatar, change your username, and maintain the highest level of account security with password management.
-    
--   **Personalized Preferences:** Tailor your hotel experience by updating your preferences. Want breakfast included in your stay? Set your preferred breakfast price and more.
-
-# Live Demo
-[itsteatv-hotel-demo](https://master--enchanting-cannoli-80698f.netlify.app)
-
-
+ 
 # Technologies Used:
 
 **1. ReactJS:**
@@ -82,7 +54,7 @@ To run the project locally, follow these steps:
 
 ```bash
 
-git  clone  https://github.com/itsteatv/itsteatv-hotel.git
+git  clone  https://github.com/ronak1311/hotelmanagement
 
 ```
 
@@ -94,7 +66,7 @@ git  clone  https://github.com/itsteatv/itsteatv-hotel.git
 
 ```bash
 
-cd  itsteatv-hotel
+cd  hotelmanagement
 
 ```
 
@@ -121,61 +93,3 @@ npm  install
 npm  run  dev
 
 ```
-
-# Contributing
-
-Contributions are welcome! If you find any issues or have suggestions for improvement, please feel free to submit a pull request.
-
-### Project todos.
-
-- [x] Header & Sidebar components added
-
-- [x] Routing added ( sidebar )
-
-- [x] Fetching table data added
-
-- [x] Deleting cabins added
-
-- [x] Creating new cabin added
-
-- [x] Handling & showing form error
-
-- [x] Uploading images to supbase
-
-- [x] Editing cabin
-
-- [x] Duplicating cabin
-
-- [x] Application setting
-
-- [x] Filtering cabins (based on discount)
-
-- [x] Sorting cabins
-
-- [x] Dark mode
-
-- [x] Getting booking table from api
-
-- [x] Uploading sample data
-
-- [x] Filtering Bookings
-
-- [x] Sorting Bookings
-
-- [x] Searching Cabins
-
-- [x] Pagination for bookings
-
-- [x] Booking detail page
-
-- [x] Authentication (Login)
-
-- [x] Creating new user (only authenticated users allowed)
-
-- [x] Update user info
-
-- [x] Dashboard layout (i will add more details to the dashboard later)
-
-# project is finished but i have some plans to add some new features in near future.
-
-# If you login with discord and after you are authenticated you get a page unavailable error, don't worry, you're discord profile is authorized (i suggest login with the default account).

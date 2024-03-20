@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import AppLayout from "./ui/AppLayout.jsx";
+import CustomerAppLayout from "./ui/CustomnerAppLayout.jsx";
 import Home from "./pages/Home.jsx";
 
 const queryClient = new QueryClient({
@@ -25,16 +26,22 @@ function App() {
             <ReactQueryDevtools initialIsOpen={false} />
             <BrowserRouter>
                 <Routes>
-                <Route element={<ProtectedRoute> <AppLayout /> </ProtectedRoute>}>
-                    <Route index element={<Navigate replace to="dashboard" />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="*" element={<PageNotFound />} />
-                </Route>
 
-                    <Route path="/" element={<Home />} />
+                    
+                <Route path="/" element={ <CustomerAppLayout />}>
+                    <Route index element={<Navigate replace to="/home" />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="*" element={<PageNotFound />} />
+                </Route>
+                
+                    <Route path="admin" element={<ProtectedRoute> <AppLayout /> </ProtectedRoute>}>
+                        <Route index element={<Navigate replace to="dashboard" />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="*" element={<PageNotFound />} />
+                    </Route>
+
                 </Routes>
 
             </BrowserRouter>

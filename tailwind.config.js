@@ -14,6 +14,10 @@ export default withMT({
       'Ubuntu': ['Ubuntu', 'sans-serif'],
     },
     extend: {
+      colors: {
+        'custom-gray-200': '#e9e9e9',
+        'custom-gray-300': '#d2d2d2',
+      },
       screens: {
         "mobile": { "min": "9.375em", "max": "48.75em" },
         "bookingTable": { "min": "9.375em", "max": "56.25em" },

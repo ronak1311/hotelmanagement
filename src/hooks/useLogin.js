@@ -15,7 +15,7 @@ export function useLogin() {
            localStorage.setItem("user",JSON.stringify(user));
 
             toast.success("You've been successfully logged in"),
-                navigate("/dashboard", { replace: true });
+                navigate("/", { replace: true });
         },
 
         onError: (error) => {

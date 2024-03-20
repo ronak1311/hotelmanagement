@@ -9,7 +9,7 @@ import R3 from "../assets/R3.jpg";
 import R2 from "../assets/R2.jpg";
 import R4 from "../assets/R4.jpg";
 
-function Home() {
+function Dashboard() {
   return (
     <>
       <div className="flex justify-center h-100">
@@ -204,4 +204,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Dashboard;
