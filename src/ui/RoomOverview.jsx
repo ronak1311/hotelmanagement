@@ -1,17 +1,28 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { Carousel } from "@material-tailwind/react";
 import R1 from "../assets/R1.jpg";
 import R3 from "../assets/R3.jpg";
 import R2 from "../assets/R2.jpg";
 import R4 from "../assets/R4.jpg";
 
-function RoomOverview() {
+// eslint-disable-next-line react/prop-types
+function RoomOverview({roomDetails, handleBookButton}) {
   const [activeTab, setActiveTab] = useState("overview");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
+  const renderAmenities = () => {
+    return(
+      <>
+    {roomDetails && roomDetails.roomAmenities && roomDetails.roomAmenities.map((amenities, index)=>{
+        return(<><li key={index * 123}>{amenities?.amenities?.name}</li></>)
+      })}
+      </>
+    )
+  }
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
@@ -38,13 +49,12 @@ function RoomOverview() {
               <img src={R1} alt="Room" className="w-full h-80 object-cover mb-4 rounded-lg" />
               <img src={R2} alt="Room" className="w-full h-80 object-cover mb-4 rounded-lg" />
               <img src={R3} alt="Room" className="w-full h-80 object-cover mb-4 rounded-lg" />
+              <img src={R4} alt="Room" className="w-full h-80 object-cover mb-4 rounded-lg" />
             </Carousel>
-            <div className="text-lg font-bold mb-2">Deluxe Room</div>
-            <div className="text-gray-700 mb-2">$200 per night</div>
+            <div className="text-lg font-bold mb-2">{roomDetails.roomType?.roomTypeName}</div>
+            <div className="text-gray-700 mb-2">${roomDetails.pricePerNight} per night</div>
             <ul className="list-disc list-inside text-gray-700">
-              <li>Free Wi-Fi</li>
-              <li>Complimentary breakfast</li>
-              <li>Pool access</li>
+            {renderAmenities()}
             </ul>
           </div>
         );
@@ -52,25 +62,34 @@ function RoomOverview() {
         return (
           <div>
             <div className="text-lg font-bold mb-2">Prices</div>
-            <div className="text-gray-700 mb-2">$200 per night</div>
+            <div className="text-gray-700 mb-2">${roomDetails.pricePerNight} per night</div>
           </div>
         );
       case "amenities":
         return (
           <div>
             <div className="text-lg font-bold mb-2">Amenities</div>
-            <ul className="list-disc list-inside text-gray-700">
-              <li>Free Wi-Fi</li>
-              <li>Complimentary breakfast</li>
-              <li>Pool access</li>
-            </ul>
+            {renderAmenities()}
           </div>
         );
       case "policies":
         return (
           <div>
             <div className="text-lg font-bold mb-2">Policies</div>
-            <p>Enter your policies here...</p>
+            <p>
+              <ul className="list-disc list-inside text-gray-700">
+                <li><b>Reservation </b>: Book via official channels. Credit card may be required.</li>
+                <li><b>Check-in/Check-out</b>: From 3:00 PM / By 12:00 PM. ID and credit card required.</li>
+                <li><b>Cancellation/Modification</b>: Policies vary. Check terms. Late cancel may incur a charge.</li>
+                <li><b>Payment</b>: Due at check-in unless prepayment arranged. Credit cards and cash accepted.</li>
+                <li><b>Occupancy/Charges</b>: Rates based on double occupancy. Extra charges for additional guests or services.</li>
+                <li><b>Age Requirements</b>: Must be 18+ to check-in. Minors require parental consent.</li>
+                <li><b>Smoking/Pets</b>: Non-smoking property. No pets allowed except service animals.</li>
+                <li><b>Conduct/Liability</b>: Guests must adhere to policies. Hotel not liable for loss/damage.</li>
+                <li><b>Special Requests</b>: Notify hotel in advance for special needs.</li>
+                <li><b>Privacy Policy</b>: Guest information handled in accordance with privacy policy.</li>
+              </ul>
+            </p>
           </div>
         );
       default:
@@ -116,7 +135,7 @@ function RoomOverview() {
           </button>
         </div>
         {renderTabContent()}
-        <button className="bg-gray-700 text-white px-4 py-2 rounded-lg mt-4">Book Now</button>
+        <button className="bg-gray-700 text-white px-4 py-2 rounded-lg mt-4" onClick={() =>handleBookButton()}>Book Now</button>
       </div>
     </div>
   );

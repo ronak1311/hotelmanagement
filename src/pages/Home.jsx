@@ -1,15 +1,31 @@
 
+import { useEffect } from "react";
 import GalleryCarousel from "../ui/GalleryCarousel";
 import RoomOverview from "../ui/RoomOverview";
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { useRoom } from "../hooks/useRoom";
+import Spinner from "../ui/Spinner";
 
+import {useSelector} from 'react-redux';
 function Home() {
+  const { isLoading, getRooms } = useRoom();
+  // const { isLoading2, getAmenities } = useAmenities();
+ const rooms = useSelector(state => state.rooms);
+
+  useEffect(()=>{
+    getRooms();
+    // getAmenities();
+  },[])
+
+  const handleBookButton = () =>{
+    alert("AAAAAAAA")
+  }
   return (
     <>
       <div className="flex justify-center h-100 bg-#e9e9e9">
           <GalleryCarousel/>
         </div>
-
+          {console.log("RM", rooms)}
         <div className="text-center mt-8">
         <h1 className="text-3xl font-bold">About Us</h1>
         <p className="mt-4 max-w-xl mx-auto">
@@ -24,14 +40,16 @@ function Home() {
 
       <div className="text-center mt-8">
         <h1 className="text-3xl font-bold">Why choouse us</h1>
-        {/* Add your About Us content here */}
       </div>
 
         <div className="flex flex-wrap justify-center mt-8">
-        <RoomOverview/>
-        <RoomOverview/>
-        <RoomOverview/>
-        <RoomOverview/>
+          {isLoading ? <> <Spinner /> </>:rooms && rooms.length > 0  && rooms.map((value, index)=>{
+            return(
+              <>
+              <RoomOverview roomDetails={value} key={index} handleBookButton = {handleBookButton} />
+              </>
+            )
+          })}
 
       </div>
       

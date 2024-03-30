@@ -10,6 +10,7 @@ import ProtectedRoute from "./ui/ProtectedRoute";
 import AppLayout from "./ui/AppLayout.jsx";
 import CustomerAppLayout from "./ui/CustomnerAppLayout.jsx";
 import Home from "./pages/Home.jsx";
+import Rooms from "./pages/Rooms.jsx";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/" element={ <CustomerAppLayout />}>
                     <Route index element={<Navigate replace to="/home" />} />
                     <Route path="/home" element={<Home />} />
+                    <Route path="/rooms" element={<Rooms />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="*" element={<PageNotFound />} />
