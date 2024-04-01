@@ -15,11 +15,12 @@ export async function signUp({ firstName,lastName, dob, phoneNumber, address, em
     return data;
 }
 
-export async function login({ email, password }) {
+export async function login({ email, password, from }) {
     const { data, error } = await supabase.from('signUp').select(`*`).eq('email', email).single()
 
     if(data.email == email && data.password == password){
-        return data;
+        let newData = {...data,from};
+        return newData;
     }
 
     if (error) {

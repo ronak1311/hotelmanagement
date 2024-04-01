@@ -7,15 +7,17 @@ export function useLogin() {
     const navigate = useNavigate();
 
     const { isLoading, mutate: login } = useMutation({
-        mutationFn: ({ email, password }) => loginApi({ email, password }),
+        mutationFn: ({ email, password, from }) => loginApi({ email, password, from }),
 
         onSuccess: (user) => {
-            console.log("USER", user);
             user = {...user, isAuthenticated:true}
            localStorage.setItem("user",JSON.stringify(user));
 
-            toast.success("You've been successfully logged in"),
+            toast.success("You've been successfully logged in");
+            if(!user.from && !user.from =="room"){
                 navigate("/", { replace: true });
+                
+            }
         },
 
         onError: (error) => {

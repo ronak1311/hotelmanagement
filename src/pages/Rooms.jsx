@@ -1,12 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import RoomCard from "../ui/RoomCard";
+import { useAddOns, useReservation } from "../hooks/useRoom";
+import { useSelector } from "react-redux";
+import Spinner from "../ui/Spinner";
+import { useLogin } from "../hooks/useLogin";
+import { AiOutlineLogin } from "react-icons/ai";
+import toast from "react-hot-toast";
+import Select from "react-tailwindcss-select";
 
 function Rooms() {
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState(new Date());
   const [persons, setPersons] = React.useState(1);
+  const [loginStatus, setLoginStatus] = React.useState(null);
+  const [isLogging, setIsLogging] = React.useState(false);
+  const [currentBookingRoom, setCurrentBookingRoom] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const { isLoading, getReservation } = useReservation();
+  const reservations = useSelector(
+    (state) => state.reservationReducer.reservation
+  );
+  const addOns = useSelector((state) => state.addOnsReducer.addOns);
+  let user = JSON.parse(localStorage.getItem("user"));
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { isLoading: loginLoading, login } = useLogin();
+  const { isLoading: addOnLoading, getAddons } = useAddOns();
+  const [addOnsForRoom, setAddOnsForRoom] = useState(null);
+  const [addOnsForExtra, setAddOnsForExtra] = useState(null);
+  const navigate = useNavigate();
+  const onSubmitHandler = function (event) {
+    event.preventDefault();
+
+    if (!email || !password) {
+      toast.error("Email and Password is required");
+      return;
+    }
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email)) {
+      toast.error("Email must be in xyz@abc.com");
+      return;
+    }
+
+    const passRegex =
+      /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{6,})[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]+$/;
+    if (!passRegex.test(password)) {
+      toast.error(
+        "Password must be Alphanumeric with special character and 6 of length"
+      );
+      return;
+    }
+
+    login(
+      { email, password, from: "room" },
+      {
+        onSettled: () => {
+          setEmail("");
+          setPassword("");
+          setIsLogging(false);
+        },
+      }
+    );
+  };
+  useEffect(() => {
+    getReservation({
+      checkInDate: new Date().toISOString().substring(0, 10),
+      checkOutDate: new Date().toISOString().substring(0, 10),
+      maxOccupancy: persons,
+    });
+    getAddons();
+  }, []);
 
   // Function to handle date changes
   const handleStartDateChange = (date) => {
@@ -22,24 +88,90 @@ function Rooms() {
     setPersons(parseInt(e.target.value));
   };
 
-  // Sample data for available rooms (you can replace this with actual data)
-  const availableRooms = [
-    { id: 1, type: "Single", capacity: 1, price: 100 },
-    { id: 2, type: "Double", capacity: 2, price: 150 },
-    { id: 3, type: "Suite", capacity: 4, price: 250 },
-  ];
+  const searchRooms = () => {
+    getReservation({
+      checkInDate: startDate.toISOString().substring(0, 10),
+      checkOutDate: endDate.toISOString().substring(0, 10),
+      maxOccupancy: persons,
+    });
+  };
+  const handleBook = (room) => {
+    setCurrentBookingRoom(room);
+    setOpen(true);
+  };
+  const RenderAdultsDropdown = () => {
+    let jsxElements = [];
+    for (let i = 0; i < Number(currentBookingRoom.roomType.maxOccupancy); i++) {
+      jsxElements.push(<option>{i + 1}</option>);
+    }
+    return jsxElements;
+  };
 
-  // Filter available rooms based on number of persons
-  const filteredRooms = availableRooms.filter(
-    (room) => room.capacity >= persons
-  );
+  const handleChange = (value) => {
+    setAddOnsForRoom(value);
+  };
 
+  const handleExtraChange = (value) => {
+    setAddOnsForExtra(value);
+  };
+  const filterdRoomAddOnList = addOns?.filter((item) => {
+    return (
+      item.forRoom && {
+        Name: item.Name,
+        addonId: item.addonId,
+        created_at: item.created_at,
+      }
+    );
+  });
+  const filterdExtraAddOnList = addOns?.filter((item) => {
+    return (
+      !item.forRoom && {
+        Name: item.Name,
+        addonId: item.addonId,
+        created_at: item.created_at,
+      }
+    );
+  });
+  const roomAddOnList = filterdRoomAddOnList
+    ? filterdRoomAddOnList.map((item) => {
+        return { value: `${item.Name} ($${item.price})`, label: `${item.Name} ($${item.price})`, id: item.addonId, price: item.price };
+      })
+    : [];
+  const extraAddOnList = filterdExtraAddOnList
+    ? filterdExtraAddOnList.map((item) => {
+        return { value: `${item.Name} ($${item.price})`, label: `${item.Name} ($${item.price})`, id: item.addonId, price: item.price };
+      })
+    : [];
+
+  const renderPrices = () =>{
+      let totalPriceForBooking = currentBookingRoom.pricePerNight;
+      let totalRoomAddons = 0;
+      let totalExtraAddons = 0;
+      addOnsForRoom && addOnsForRoom.forEach(element => {
+        totalRoomAddons += element.price;
+      });
+      addOnsForExtra && addOnsForExtra.forEach(element=>{
+        totalExtraAddons += element.price
+      });
+      totalPriceForBooking = totalPriceForBooking + totalExtraAddons + totalRoomAddons; 
+      return(
+        <>
+        <h6>Room : {totalPriceForBooking}</h6>
+        <h6>Room Add Ons : {totalRoomAddons}</h6>
+        <h6>Extra Add Ons : {totalExtraAddons}</h6>
+        <hr/>
+        <h5>Total Price : {totalPriceForBooking}</h5>
+        </>
+      )
+  }
   return (
-    <div className="container mx-auto mt-8">
+    <div className="container mx-auto mt-8 h-100">
       <div className="flex justify-center">
-        <div className="w-full max-w-2xl">
-          <h1 className="text-3xl font-bold mb-4">Available Rooms</h1>
-          <div className="flex justify-between mb-4">
+        <div className="w-full max-w-1xl">
+          <h1 className="text-3xl font-bold mb-4 justify-center">
+            Available Rooms
+          </h1>
+          <div className="flex justify-center mb-4 items-end">
             <div className="mr-2">
               <label className="block mb-2">Check-in Date:</label>
               <DatePicker
@@ -56,26 +188,432 @@ function Rooms() {
                 className="border border-gray-300 rounded px-3 py-2"
               />
             </div>
+            <div className="ml-2">
+              <label className="block mb-2">Number of Persons:</label>
+              <input
+                type="number"
+                value={persons}
+                onChange={handlePersonsChange}
+                min="1"
+                max="10" // Adjust max number of persons as needed
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+              />
+            </div>
+            <div className="ml-2">
+              <label className="block mb-2"></label>
+              <button
+                onClick={() => searchRooms()}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md inline-flex items-center transition-colors duration-300 shadow-md"
+              >
+                Search
+              </button>
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block mb-2">Number of Persons:</label>
-            <input
-              type="number"
-              value={persons}
-              onChange={handlePersonsChange}
-              min="1"
-              max="10" // Adjust max number of persons as needed
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-            />
-          </div>
+
           {/* Grid to showcase available rooms */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredRooms.map((room) => (
-              <RoomCard key={room.id} room={room} />
-            ))}
+          <div className="flex flex-wrap justify-center mt-8">
+            {reservations && reservations.length <= 0
+              ? "No Rooms Found"
+              : reservations?.map((room) => {
+                  return (
+                    <RoomCard
+                      key={room.id}
+                      rooms={room}
+                      isLoading={isLoading}
+                      onBookingButton={(room) => handleBook(room)}
+                    />
+                  );
+                })}
           </div>
         </div>
       </div>
+      {open ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-3/6 my-6 mx-auto max-w-4/5">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
+                  <h3 className="text-3xl font-semibold">Booking Room</h3>
+                  <button
+                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      ×
+                    </span>
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="relative p-6 flex-auto">
+                  <form>
+                    <div className="space-y-12">
+                      <div className="border-b border-gray-900/10 pb-12">
+                        {isLogging && (
+                          <div>
+                            <form className="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white flex justify-center">
+                              <div className="max-w-screen-xl m-0 sm:m-1 bg-white dark:bg-gray-800 shadow sm:rounded-lg flex justify-center flex-1">
+                                <div className="lg:w-1/1 xl:w-5/12 p-6 sm:p-12">
+                                  <div className="mt-12 flex flex-col items-center">
+                                    <h1 className="text-2xl xl:text-3xl font-extrabold">
+                                      Log in
+                                    </h1>
+                                    <div className="w-full flex-1 mt-8">
+                                      <div className="mx-auto max-w-xs">
+                                        <input
+                                          className="w-full px-8 py-4 rounded-lg font-medium disabled:cursor-not-allowed disabled:bg-gray-300 bg-gray-100 border border-gray-200 placeholder-gray-500 dark:text-black text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                                          value={email}
+                                          onChange={(e) =>
+                                            setEmail(e.target.value)
+                                          }
+                                          disabled={isLoading}
+                                          type="email"
+                                          placeholder="Email"
+                                          autoComplete="username"
+                                        />
+                                        <input
+                                          className="w-full px-8 py-4 rounded-lg font-medium disabled:cursor-not-allowed disabled:bg-gray-300 bg-gray-100 border border-gray-200 placeholder-gray-500 dark:text-black text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+                                          value={password}
+                                          onChange={(e) =>
+                                            setPassword(e.target.value)
+                                          }
+                                          disabled={isLoading}
+                                          type="password"
+                                          placeholder="Password"
+                                          autoComplete="current-password"
+                                        />
+                                        <button
+                                          onClick={(e) => onSubmitHandler(e)}
+                                          className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                                        >
+                                          <AiOutlineLogin size={20} />
+                                          <span className="ml-3 disabled:cursor-not-allowed disabled:bg-gray-300">
+                                            {!isLoading ? (
+                                              "Log in"
+                                            ) : (
+                                              <Spinner />
+                                            )}
+                                          </span>
+                                        </button>
+                                        <div className="my-12 border-b text-center">
+                                          <div className="leading-none px-2 py-2 inline-block text-sm text-white  dark:text-white dark:bg-gray-800 tracking-wide font-medium transform translate-y-1/2 bg-none">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                navigate("/register")
+                                              }
+                                              className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                                            >
+                                              Or Signup here
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        )}
+                        {!loginStatus && !user && !isLogging ? (
+                          <div className="mt-0 ">
+                            <div className="mt-0 flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLoginStatus("login");
+                                  setIsLogging(true);
+                                }}
+                                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              >
+                                Login
+                              </button>{" "}
+                              <p className="ml-3 mr-3">or</p>
+                              <button
+                                type="button"
+                                onClick={() => setLoginStatus("guest")}
+                                className="text-sm font-semibold leading-6 text-gray-900"
+                              >
+                                Book as a guest
+                              </button>
+                            </div>
+                          </div>
+                        ) : user || loginStatus == "guest" ? (
+                          <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                First name
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="first-name"
+                                  value={
+                                    user && user.firstName ? user.firstName : ""
+                                  }
+                                  disabled={user && user.firstName}
+                                  id="first-name"
+                                  autoComplete="given-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Last name
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="last-name"
+                                  value={
+                                    user && user.lastName ? user.lastName : ""
+                                  }
+                                  disabled={user && user.lastName}
+                                  id="last-name"
+                                  autoComplete="family-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Email
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="email"
+                                  value={user && user.email ? user.email : ""}
+                                  disabled={user && user.email}
+                                  id="email"
+                                  autoComplete="family-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Phone Number
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="phoneNumber"
+                                  value={
+                                    user && user.phoneNumber
+                                      ? user.phoneNumber
+                                      : ""
+                                  }
+                                  disabled={user && user.phoneNumber}
+                                  id="phoneNumber"
+                                  autoComplete="family-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Phone Number
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="phoneNumber"
+                                  value={
+                                    user && user.phoneNumber
+                                      ? user.phoneNumber
+                                      : ""
+                                  }
+                                  disabled={user && user.phoneNumber}
+                                  id="phoneNumber"
+                                  autoComplete="family-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Address
+                              </label>
+                              <div className="mt-2">
+                                <input
+                                  type="text"
+                                  name="address"
+                                  value={
+                                    user && user.address ? user.address : ""
+                                  }
+                                  disabled={user && user.address}
+                                  id="address"
+                                  autoComplete="family-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Number of Adults
+                              </label>
+                              <div className="mt-2">
+                                <select
+                                  id="country"
+                                  name="country"
+                                  autoComplete="country-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                >
+                                  {currentBookingRoom &&
+                                  currentBookingRoom.roomType &&
+                                  currentBookingRoom.roomType.maxOccupancy ? (
+                                    RenderAdultsDropdown()
+                                  ) : (
+                                    <option>Not Available</option>
+                                  )}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Number of Childrens
+                              </label>
+                              <div className="mt-2">
+                                <select
+                                  id="country"
+                                  name="country"
+                                  autoComplete="country-name"
+                                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                >
+                                  <option>0</option>
+                                  <option>1</option>
+                                  <option>2</option>
+                                  <option>3</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Add Ons
+                              </label>
+                              <div className="mt-2">
+                                <Select
+                                  value={addOnsForRoom}
+                                  onChange={handleChange}
+                                  options={roomAddOnList}
+                                  isMultiple={true}
+                                  placeholder="Room Add Ons"
+                                  classNames={{
+                                    menu: "absolute z-10 w-full bg-white shadow-lg border rounded py-1 mt-1.5 text-smtext-black-500",
+                                    listItem: ({ isSelected }) =>
+                                      `block transition duration-200 px-2 py-2 cursor-pointer select-none truncate rounded ${
+                                        isSelected
+                                          ? `text-white bg-blue-500`
+                                          : `text-black-500 hover:bg-blue-100 hover:text-blue-500`
+                                      }`,
+                                  }}
+                                  // classNames="block w-full rounded-md border-0 py-1.5 text-black-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Extra Services
+                              </label>
+                              <div className="mt-2">
+                                <Select
+                                  value={addOnsForExtra}
+                                  onChange={handleExtraChange}
+                                  options={extraAddOnList}
+                                  isMultiple={true}
+                                  placeholder="Room Add Ons"
+                                  classNames={{
+                                    menu: "absolute z-10 w-full bg-white shadow-lg border rounded py-1 mt-1.5 text-smtext-black-500",
+                                    listItem: ({ isSelected }) =>
+                                      `block transition duration-200 px-2 py-2 cursor-pointer select-none truncate rounded ${
+                                        isSelected
+                                          ? `text-white bg-blue-500`
+                                          : `text-black-500 hover:bg-blue-100 hover:text-blue-500`
+                                      }`,
+                                  }}
+                                  // classNames="block w-full rounded-md border-0 py-1.5 text-black-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                />
+                              </div>
+                            </div>
+                            <div className="sm:col-span-3">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6 text-gray-900"
+                              >
+                                Price
+                              </label>
+                              <div className="mt-2">
+                               {renderPrices()}
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex items-center justify-end gap-x-6">
+                      <button
+                        onClick={() => setOpen(false)}
+                        type="button"
+                        className="text-sm font-semibold leading-6 text-gray-900"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        Book
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { getRooms as getRoomAPI } from "../services/apiRooms";
+import { getAddOns, getRooms as getRoomAPI } from "../services/apiRooms";
+import { getReservation as getReservationAPI } from "../services/apiRooms";
 // import { getAmenities as getAmenitiesAPI } from "../services/apiRooms";
 import toast from "react-hot-toast";
 import {useDispatch} from 'react-redux';
@@ -21,22 +22,40 @@ export function useRoom() {
     return { isLoading, getRooms }
 }
 
-// export function useAmenities() {
-//     const dispatch = useDispatch()
-//     const { isLoading, mutate: getAmenities } = useMutation({
-//         mutationFn: () => getAmenitiesAPI(),
+export function useReservation() {
+    const dispatch = useDispatch()
+    const { isLoading, mutate: getReservation } = useMutation({
+        mutationFn: ({checkInDate,checkOutDate, maxOccupancy}) => getReservationAPI({checkInDate,checkOutDate,maxOccupancy}),
 
-//         onSuccess: (amenities) => {
-//             console.log("Amen", amenities);
-//             dispatch({ type: 'setAmenities', payload: amenities })
+        onSuccess: (availableRooms) => {
+            dispatch({ type: 'setReservation', payload: availableRooms })
            
-//         },
+        },
 
-//         onError: (error) => {
-//             console.error(error);
-//             toast.error(error.message)
-//         }
-//     })
+        onError: (error) => {
+            console.error(error);
+            toast.error(error.message)
+        }
+    })
 
-//     return { isLoading, getAmenities }
-// }
+    return { isLoading, getReservation }
+}
+
+export function useAddOns() {
+    const dispatch = useDispatch()
+    const { isLoading, mutate: getAddons } = useMutation({
+        mutationFn: () => getAddOns(),
+
+        onSuccess: (availableRooms) => {
+            dispatch({ type: 'setAddOns', payload: availableRooms })
+           
+        },
+
+        onError: (error) => {
+            console.error(error);
+            toast.error(error.message)
+        }
+    })
+
+    return { isLoading, getAddons }
+}

@@ -10,22 +10,21 @@ import {useSelector} from 'react-redux';
 function Home() {
   const { isLoading, getRooms } = useRoom();
   // const { isLoading2, getAmenities } = useAmenities();
- const rooms = useSelector(state => state.rooms);
+ const rooms = useSelector(state => state.roomReducer.rooms);
 
   useEffect(()=>{
     getRooms();
     // getAmenities();
   },[])
 
-  const handleBookButton = () =>{
-    alert("AAAAAAAA")
-  }
+const handleBookButton =() =>{
+  
+}
   return (
     <>
       <div className="flex justify-center h-100 bg-#e9e9e9">
           <GalleryCarousel/>
         </div>
-          {console.log("RM", rooms)}
         <div className="text-center mt-8">
         <h1 className="text-3xl font-bold">About Us</h1>
         <p className="mt-4 max-w-xl mx-auto">
