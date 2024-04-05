@@ -28,3 +28,18 @@ export const formatCurrency = (value) =>
     new Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(
         value
     );
+
+
+   export function calculateNightStay(checkInDate, checkOutDate) {
+        // Convert the dates to milliseconds
+        const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+        const startDate = new Date(checkInDate);
+        const endDate = new Date(checkOutDate);
+    
+        // Calculate the difference in milliseconds
+        const difference = endDate.getTime() - startDate.getTime();
+    
+        // Convert the difference to days
+        const nightsStayed = Math.round(difference / oneDay);
+        return nightsStayed;
+    }

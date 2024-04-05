@@ -30,7 +30,8 @@ function Login() {
       }
 
     login({ email, password }, {
-      onSettled: () => {
+      onSettled: (data) => {
+console.log('✌️data --->', data);
         setEmail("");
         setPassword("");
       }

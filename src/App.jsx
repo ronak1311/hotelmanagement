@@ -11,6 +11,7 @@ import AppLayout from "./ui/AppLayout.jsx";
 import CustomerAppLayout from "./ui/CustomnerAppLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Rooms from "./pages/Rooms.jsx";
+import Bookings from "./pages/Bookings.jsx";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -20,7 +21,7 @@ const queryClient = new QueryClient({
         }
     }
 })
-
+let user = JSON.parse(localStorage.getItem("user")) || false;
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
@@ -28,7 +29,13 @@ function App() {
             <BrowserRouter>
                 <Routes>
 
-                    
+                {user && user.userType == "admin" && 
+                <Route path="admin" element={<ProtectedRoute> <AppLayout /> </ProtectedRoute>}>
+                        <Route index element={<Navigate replace to="dashboard" />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="bookings" element={<Bookings />} />
+                        <Route path="*" element={<PageNotFound />} />
+                    </Route>  }
                 <Route path="/" element={ <CustomerAppLayout />}>
                     <Route index element={<Navigate replace to="/home" />} />
                     <Route path="/home" element={<Home />} />
@@ -38,11 +45,7 @@ function App() {
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
                 
-                    <Route path="admin" element={<ProtectedRoute> <AppLayout /> </ProtectedRoute>}>
-                        <Route index element={<Navigate replace to="dashboard" />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="*" element={<PageNotFound />} />
-                    </Route>
+                    
 
                 </Routes>
 

@@ -16,10 +16,10 @@ function Header() {
           <div className="flex items-center justify-between">
             <Link
               className="flex-none text-xl font-semibold dark:text-white font-Inter"
-              to="/"
+              to="/admin"
               aria-label="Brand"
             >
-              itsteatv hotel
+              Admin
             </Link>
           </div>
           <div className="flex items-center ml-auto sm:ml-0 sm:order-3">
@@ -44,37 +44,7 @@ function Header() {
                 </svg>
               </button>
             </div>
-            <div className="pl-3 sm:pl-6 sm:ml-6 sm:border-l sm:border-gray-300 dark:border-gray-700">
-              <button
-                type="button"
-                className="p-2 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-gray-800 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
-                data-hs-overlay="#navbar-secondary-content"
-                aria-controls="navbar-secondary-content"
-                aria-label="Toggle navigation"
-              >
-                <svg
-                  className="hs-overlay-open:hidden w-4 h-4"
-                  width={16}
-                  height={16}
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
-                  />
-                </svg>
-                <svg
-                  className="hs-overlay-open:block hidden w-4 h-4"
-                  width={16}
-                  height={16}
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
-              </button>
-            </div>
+            
           </div>
           <div
             id="navbar-offcanvas-example"
@@ -114,27 +84,7 @@ function Header() {
                     {/* <Logout /> */}
                   </div>
                   <div className="hs-dropdown relative [--strategy:static] sm:[--strategy:absolute] [--adaptive:none] sm:[--trigger:click]">
-                    <button
-                      type="button"
-                      className="flex justify-between w-full items-center text-sm font-medium text-gray-800 rounded-md py-2 px-3 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                    >
-                      More
-                      <svg
-                        className="sm:-rotate-90 ml-2 w-2.5 h-2.5 text-gray-600"
-                        width={16}
-                        height={16}
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </button>
+                    
                     <div className="hs-dropdown-menu transition-[opacity,margin] duration-[0.1ms] sm:duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 sm:w-48 hidden z-10 sm:mt-2 bg-white sm:shadow-md rounded-lg p-2 dark:bg-gray-800 sm:dark:border dark:border-gray-700 dark:divide-gray-700 before:absolute sm:border before:-right-5 before:top-0 before:h-full before:w-5 top-0 right-full !mx-[10px]">
                       <NavLink
                         className={({ isActive }) =>
@@ -176,7 +126,7 @@ function Header() {
                     className={({ isActive }) =>
                       isActive ? "flex px-[0.75rem] font-medium py-2 text-blue-600 hover:text-blue-700" : "flex px-[0.75rem] py-2 font-medium text-gray-500 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500"
                     }
-                    to="/bookings"
+                    to="/admin/bookings"
                   >
                     Bookings
                   </NavLink>
