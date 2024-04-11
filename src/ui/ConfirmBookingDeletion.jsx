@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 
-function ConfirmBookingDeletion({ onDeleteBooking, bookingId, isDeleting, singleBookingId, onDeleteSingleBooking }) {
+function ConfirmBookingDeletion({ onDeleteBooking, bookingId, isDeleting, singleBookingId, onDeleteSingleBooking, cancel }) {
     const [isOpen, setIsOpen] = useState(true);
 
     const handleCloseModal = () => {
@@ -57,12 +58,13 @@ function ConfirmBookingDeletion({ onDeleteBooking, bookingId, isDeleting, single
                                     <div className="grow">
                                         <h3
                                             className="mb-2 text-xl font-bold text-gray-800 dark:text-gray-200">
-                                            Delete Booking
+                                            {cancel ? 'Cancel Booking':'Delete Booking' }
                                         </h3>
                                         <p className="text-gray-500">
-                                            Permanently remove your booking and all of its contents
+                                            {cancel ? `Are you sure you want to cancel this booking ?`:
+                                            `Permanently remove your booking and all of its contents
                                             from the itsteatv hotel. This action is not reversible, so
-                                            please continue with caution.
+                                            please continue with caution.`}
                                         </p>
                                     </div>
                                 </div>
@@ -85,7 +87,7 @@ function ConfirmBookingDeletion({ onDeleteBooking, bookingId, isDeleting, single
                                     data-hs-overlay="#hs-danger-alert"
                                     className="disabled:cursor-not-allowed py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold disabled:bg-gray-200 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                                 >
-                                    Delete booking
+                                    {cancel ? 'Cancel' : 'Delete'} booking
                                 </button>
                             </div>
                         </div>

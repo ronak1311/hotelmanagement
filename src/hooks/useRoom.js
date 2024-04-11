@@ -74,6 +74,7 @@ export function useSetReservation() {
             toast.error(error.message)
         }
     })
+    
     const { isLoading: paymentLoading, mutate: addPayment } = useMutation({
         mutationFn: ({amount}) => addPaymentAPI({amount}),
         onError: (error) => {

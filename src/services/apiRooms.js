@@ -70,7 +70,7 @@ export async function getAddOns() {
       const { data, error } = await supabase
       .from('reservation')
       .insert([
-        { checkInDate, checkOutDate, 'status': true, numberOfPeople, numberOfChildren, 'numberOfRoom': 1, depositAmount, customerId, roomId, paymentId  },
+        { checkInDate, checkOutDate, 'status': 'booked', numberOfPeople, numberOfChildren, 'numberOfRoom': 1, depositAmount, customerId, roomId, paymentId  },
       ])
       .select()
       

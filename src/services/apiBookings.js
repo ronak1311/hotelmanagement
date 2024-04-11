@@ -96,10 +96,19 @@ export async function getStaysTodayActivity() {
 }
 
 
-export async function deleteBooking(id) {
-    // REMEMBER RLS POLICIES
-    const { data, error } = await supabase.from("bookings").delete().eq("id", id);
+export async function deleteBooking({reservationId}) {
+    const query = supabase.from("reservation").delete().eq("reservationId", reservationId);
+    const { data, error } = await query;
+    if (error) {
+        console.error(error);
+        throw new Error("Booking could not be deleted");
+    }
+    return data;
+}
 
+export async function deleteBookingAddOns({reservationId}) {
+    const query = supabase.from("reservationAdd-ons").delete().eq("reservationId", reservationId);
+    const { data, error } = await query;
     if (error) {
         console.error(error);
         throw new Error("Booking could not be deleted");
@@ -139,4 +148,18 @@ export async function getTop5ExpensiveBookings() {
     }
 
     return { data, count };
+}
+
+export async function getCustomerAllBookings({customerId}) {
+    const { data, error } = await supabase
+    .from("reservation")
+    .select(`*,room(*, roomType(*)), payment(*), reservationAdd-ons(*), signUp(*)`)
+    .eq("customerId", customerId)
+
+    if (error) {
+        console.error(error);
+        throw new Error("Booking not found");
+    }
+
+    return data;
 }

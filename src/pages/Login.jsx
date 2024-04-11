@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLogin } from "../hooks/useLogin";
 import { AiOutlineLogin } from "react-icons/ai"
 import { useNavigate } from "react-router-dom";
@@ -29,16 +29,20 @@ function Login() {
         return;
       }
 
-    login({ email, password }, {
+    login({ email, password, from :'login' }, {
       onSettled: (data) => {
-console.log('✌️data --->', data);
         setEmail("");
         setPassword("");
       }
     })
   }
 
-  
+  useEffect(()=>{
+    let user = JSON.parse(localStorage.getItem("user")) || false;
+    if(user){
+      navigate("/home", { replace: true });
+    }
+  },[])
 
   if (isLoading) {
     return <Spinner />

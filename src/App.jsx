@@ -12,6 +12,9 @@ import CustomerAppLayout from "./ui/CustomnerAppLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Rooms from "./pages/Rooms.jsx";
 import Bookings from "./pages/Bookings.jsx";
+import Mybookings from "./pages/Mybookings.jsx";
+import Signout from "./pages/Signout.jsx";
+// import SingleBooking from "./pages/SingleBooking.jsx";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -34,12 +37,15 @@ function App() {
                         <Route index element={<Navigate replace to="dashboard" />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="bookings" element={<Bookings />} />
+                        {/* <Route path="bookings/:bookingId" element={<SingleBooking />} /> */}
                         <Route path="*" element={<PageNotFound />} />
                     </Route>  }
                 <Route path="/" element={ <CustomerAppLayout />}>
                     <Route index element={<Navigate replace to="/home" />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/rooms" element={<Rooms />} />
+                    <Route path="/mybookings" element={<Mybookings />} />
+                    <Route path="/logout" element={<Signout />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="*" element={<PageNotFound />} />

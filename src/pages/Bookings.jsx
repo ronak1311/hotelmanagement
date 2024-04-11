@@ -12,7 +12,7 @@ import ConfirmBookingDeletion from "../ui/ConfirmBookingDeletion";
 import { useNavigate } from "react-router-dom";
 import { useCheckOut } from "../hooks/useCheckOut";
 import { useUpdateStatus } from "../hooks/useBookings";
-import { useDeleteBooking } from "../hooks/useDeleteBooking";
+import { useDeleteBooking, useDeleteBookingAddOns } from "../hooks/useDeleteBooking";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ConfirmCheckIn from "../ui/ConfirmCheckin";
@@ -21,7 +21,8 @@ function Bookings() {
   const { isLoading, getBookings } = useBookings();
   const { checkOut, isCheckingOut } = useCheckOut();
   const { isLoading : statusUpdateLoading, updateBookingStatus } = useUpdateStatus();
-  const { deleteBooking, isDeleting } = useDeleteBooking();
+  const { isLoading: deleteLoading, deleteBooking } = useDeleteBooking();
+  const { isLoading: deleteAddOnsLoading, deleteBookingAddOns } = useDeleteBookingAddOns();
   const navigate = useNavigate();
   const allbookings = useSelector(
     (state) => state.bookingsReducer.bookings
@@ -31,11 +32,19 @@ function Bookings() {
   const [bookingId, setBookingId] = useState(null);
 
   const handleDeleteBooking = (bookingId) => {
-    deleteBooking(bookingId);
+    deleteBookingAddOns({reservationId:bookingId},{
+      onSettled : () =>{
+        deleteBooking({reservationId:bookingId},{
+          onSettled : () =>{
+            getBookings()
+          }
+        });
+      }
+    })
+   
   };
 
   const onStatusChange = (bookingId, status) => {
-console.log('✌️bookingId --->', bookingId);
     updateBookingStatus({reservationId: bookingId, status},{
       onSettled : (data) => {
         setShowCheckInForm(false);
@@ -180,7 +189,7 @@ getBookings()
           </div>
         </div>
       </div >
-      {showDeleteForm && <ConfirmBookingDeletion isDeleting={isDeleting} onDeleteBooking={handleDeleteBooking} bookingId={bookingId} />}
+      {showDeleteForm && <ConfirmBookingDeletion isDeleting={deleteLoading} onDeleteBooking={handleDeleteBooking} bookingId={bookingId} />}
     </>
   );
 }

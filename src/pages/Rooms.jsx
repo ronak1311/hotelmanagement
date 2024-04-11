@@ -13,6 +13,8 @@ import toast from "react-hot-toast";
 import Select from "react-tailwindcss-select";
 import RenderLogin from "../ui/renderLogin";
 import moment from "moment";
+import { calculateNightStay } from "../utils/helpers";
+import { getDate } from "date-fns";
 
 function Rooms() {
   const [startDate, setStartDate] = useState(new Date());
@@ -92,6 +94,7 @@ function Rooms() {
   // Function to handle date changes
   const handleStartDateChange = (date) => {
     setStartDate(date);
+    setEndDate(date)
   };
 
   const handleEndDateChange = (date) => {
@@ -164,6 +167,8 @@ useEffect(()=>{
 
 },[totalAmount])
   const renderPrices = () =>{
+     let numberofDays = calculateNightStay(startDate, endDate);
+     if (numberofDays <=0) numberofDays = 1;
       let totalPriceForBooking = currentBookingRoom.pricePerNight;
       let totalRoomAddons = 0;
       let totalExtraAddons = 0;
@@ -174,14 +179,14 @@ useEffect(()=>{
         totalExtraAddons += element.price
       });
       totalPriceForBooking = totalPriceForBooking + totalExtraAddons + totalRoomAddons;
-      // setTotalAmount(parseFloat(totalPriceForBooking))
       return(
         <>
-        <h6>Room : {currentBookingRoom.pricePerNight}</h6>
-        <h6>Room Add Ons : {totalRoomAddons}</h6>
-        <h6>Extra Add Ons : {totalExtraAddons}</h6>
+     
+        <h6>Room : {currentBookingRoom.pricePerNight * numberofDays} for {numberofDays} days</h6>
+        <h6>Room Add Ons : {totalRoomAddons * numberofDays} for {numberofDays} days</h6>
+        <h6>Extra Add Ons : {totalExtraAddons * numberofDays} for {numberofDays} days</h6>
         <hr/>
-        <h5>Total Price : {totalPriceForBooking}</h5>
+        <h5>Total Price : {totalPriceForBooking * numberofDays}</h5>
         </>
       )
   }
@@ -204,39 +209,37 @@ useEffect(()=>{
     if(user){
       customerId = user.customerId;
     }else{
-    addUser({firstName, lastName, dob, email, phoneNumber, address  },
-      // addUser({numberOfChildren, numberOfPeople, addOnsForRoom, addOnsForExtra, checkInDate: startDate, checkOutDate: endDate, roomId:currentBookingRoom.roomId, loginStatus  },
-      {
+      addUser({firstName, lastName, dob, email, phoneNumber, address  },{
         onSettled: (data) => {
           customerId=data[0].customerId;
-
-          addPayment({amount:totalPriceForBooking},
-            {onSettled: (data) => {
-            paymentId=data[0].paymentId;
-            addReservation({checkInDate: startDate,checkOutDate: endDate, numberOfPeople, numberOfChildren,depositAmount: totalPriceForBooking,customerId,roomId:currentBookingRoom.roomId,paymentId},
-              {
-                onSettled: (data) =>{
-                   reservationId = data[0].reservationId;
-                   let aa = addOnsForRoom && addOnsForRoom.map((item)=> {return {addonId: item.id, reservationId}});
-                   let bb =addOnsForExtra && addOnsForExtra.map((item)=> {return {addonId: item.id, reservationId}});
-                   let reservationArray = [...aa,...bb];
-                   addReservationAddOns({reservationArray},{
-                    onSettled:data=>{
-                      console.log('✌️data --->', data);
-                      setIsRoomBooking(false);
-                            
-                    }
-                   })
-                }
-              })
-            },
-          });
-        },
-      }
-      );
-
-    
+        }
+      })
     }
+    addPayment({amount:totalPriceForBooking},
+      {onSettled: (data) => {
+      paymentId=data[0].paymentId;
+      addReservation({checkInDate: startDate,checkOutDate: endDate, numberOfPeople, numberOfChildren,depositAmount: totalPriceForBooking,customerId,roomId:currentBookingRoom.roomId,paymentId},
+        {
+          onSettled: (data) =>{
+              reservationId = data[0].reservationId;
+              let aa = addOnsForRoom && addOnsForRoom.length>0 ?addOnsForRoom.map((item)=> {return {addonId: item.id, reservationId}}) : [];
+              let bb =addOnsForExtra && addOnsForExtra.length>0 ? addOnsForExtra.map((item)=> {return {addonId: item.id, reservationId}}) : [];
+              let reservationArray = [...aa,...bb];
+              if(reservationArray.length > 0){
+                addReservationAddOns({reservationArray},{
+                  onSettled:data=>{
+                    setIsRoomBooking(false);
+                    setPaymentPage(true);
+                          
+                  }
+                  })
+              }
+             
+          }
+        })
+      },
+    });
+        
   }
 
  const renderAuthenticationOption = () =>{
@@ -523,7 +526,7 @@ useEffect(()=>{
     <div className="container mx-auto mt-8 h-100">
       <div className="flex justify-center">
         <div className="w-full max-w-1xl">
-          <h1 className="text-3xl font-bold mb-4 justify-center">
+          <h1 className="text-3xl font-bold mb-4 justify-center text-center">
             Available Rooms
           </h1>
           <div className="flex justify-center mb-4 items-end">
@@ -532,6 +535,7 @@ useEffect(()=>{
               <DatePicker
                 selected={startDate}
                 onChange={handleStartDateChange}
+                minDate={new Date()}
                 className="border border-gray-300 rounded px-3 py-2"
               />
             </div>
@@ -540,6 +544,7 @@ useEffect(()=>{
               <DatePicker
                 selected={endDate}
                 onChange={handleEndDateChange}
+                minDate={startDate}
                 className="border border-gray-300 rounded px-3 py-2"
               />
             </div>
@@ -605,6 +610,10 @@ useEffect(()=>{
                   <form>
                     <div className="space-y-12">
                       <div className="border-b border-gray-900/10 pb-12">
+                      {isPaymentPage ? <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+                        <h2> Booking Confirmed !!</h2>
+                        </div>:null}
                         {isLogging && (
                          <div>
                          <div className="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white flex justify-center">
@@ -665,10 +674,7 @@ useEffect(()=>{
                         ) : (user || loginStatus == "guest") && !isPaymentPage ? (
                           renderBookingForm()
                         ) : null}
-                        {isPaymentPage ? <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-
-                        </div>:null}
+                        
                       </div>
                     </div>
 
@@ -678,11 +684,12 @@ useEffect(()=>{
                           setOpen(false);
                           setIsLogging(false);
                           setLoginStatus("");
+                          setPaymentPage(false);
                         }}
                         type="button"
                         className="text-sm font-semibold leading-6 text-gray-900"
                       >
-                        Cancel
+                        {isPaymentPage ? "Ok":"Cancel"}
                       </button>
                       {
                         (user || loginStatus == "guest") && !isPaymentPage ?

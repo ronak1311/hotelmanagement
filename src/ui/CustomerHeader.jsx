@@ -2,23 +2,26 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from "../assets/logo.png"
+import { Button } from 'flowbite-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
+
 const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Book Now', href: '/rooms', current: false },
   // { name: 'Calendar', href: '#', current: false },
   // { name: 'Reports', href: '#', current: false },
 ]
+
+const navigation2 = [
+  { name: 'Home', href: '/', current: true },
+  { name: 'Book Now', href: '/rooms', current: false },
+  // { name: 'Calendar', href: '#', current: false },
+  // { name: 'Reports', href: '#', current: false },
+]
 const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
+  { name: 'Your Bookings', href: '/mybookings' },
+  { name: 'Sign out', href: '/logout' },
 ]
 
 function classNames(...classes) {
@@ -26,6 +29,10 @@ function classNames(...classes) {
 }
 
 export default function Example() {
+let userData = JSON.parse(localStorage.getItem("user")) || false;
+const navigate = useNavigate()
+const location = useLocation();
+console.log('✌️location --->', location);
   return (
     <>
         <Disclosure as="nav" className="bg-gray-800 h-100 min-h-24 ">
@@ -61,6 +68,7 @@ export default function Example() {
                       </div>
                     </div>
                   </div>
+                 {userData ? 
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
                       <button
@@ -78,7 +86,7 @@ export default function Example() {
                           <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                             <span className="absolute -inset-1.5" />
                             <span className="sr-only">Open user menu</span>
-                            <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                            <img className="h-8 w-8 rounded-full" src={userData.imageUrl} alt="" />
                           </Menu.Button>
                         </div>
                         <Transition
@@ -110,7 +118,7 @@ export default function Example() {
                         </Transition>
                       </Menu>
                     </div>
-                  </div>
+                  </div> : location.pathname == "/login" ? null : <button onClick={()=>navigate("/login", { replace: true }) } className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium'> Login</button>}
                   <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
                     <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -146,11 +154,11 @@ export default function Example() {
                 <div className="border-t border-gray-700 pb-3 pt-4">
                   <div className="flex items-center px-5">
                     <div className="flex-shrink-0">
-                      <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                      <img className="h-10 w-10 rounded-full" src={userData.imageUrl} alt="" />
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                      <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
+                      <div className="text-base font-medium leading-none text-white">{userData.firstName}</div>
+                      <div className="text-sm font-medium leading-none text-gray-400">{userData.email}</div>
                     </div>
                     <button
                       type="button"
