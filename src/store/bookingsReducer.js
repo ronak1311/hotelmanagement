@@ -1,7 +1,8 @@
 const INITIAL_STATE = {
     bookings:[],
     fiveBooking:[],
-    customerAllBookings:[]
+    customerAllBookings:[],
+    singleBooking:{},
   }
   export const bookingsReducer = function (state = INITIAL_STATE , action) {
     switch (action.type) {
@@ -11,6 +12,8 @@ const INITIAL_STATE = {
         return state = {...state,fiveBooking:action.payload};
         case "setCustomerAllBookings":
         return state = {...state,customerAllBookings:action.payload};
+        case "setSingleBooking":
+        return state = {...state,singleBooking:action.payload};
       default:
         return state;
     }

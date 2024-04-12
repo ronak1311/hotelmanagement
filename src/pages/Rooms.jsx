@@ -233,6 +233,9 @@ useEffect(()=>{
                           
                   }
                   })
+              }else{
+                setIsRoomBooking(false);
+                    setPaymentPage(true);
               }
              
           }

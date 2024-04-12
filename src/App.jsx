@@ -14,6 +14,8 @@ import Rooms from "./pages/Rooms.jsx";
 import Bookings from "./pages/Bookings.jsx";
 import Mybookings from "./pages/Mybookings.jsx";
 import Signout from "./pages/Signout.jsx";
+import SingleBooking from "./pages/SingleBooking.jsx";
+import Cabins from "./pages/Cabins.jsx";
 // import SingleBooking from "./pages/SingleBooking.jsx";
 
 const queryClient = new QueryClient({
@@ -37,7 +39,8 @@ function App() {
                         <Route index element={<Navigate replace to="dashboard" />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="bookings" element={<Bookings />} />
-                        {/* <Route path="bookings/:bookingId" element={<SingleBooking />} /> */}
+                        <Route path="bookings/:bookingId" element={<SingleBooking />} />
+                        <Route path="cabins" element={<Cabins />} />
                         <Route path="*" element={<PageNotFound />} />
                     </Route>  }
                 <Route path="/" element={ <CustomerAppLayout />}>

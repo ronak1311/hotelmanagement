@@ -4,6 +4,7 @@ import { AiOutlineLogin } from "react-icons/ai"
 import { useNavigate } from "react-router-dom";
 import Spinner from "../ui/Spinner";
 import toast from "react-hot-toast";
+import Gallery3 from "../assets/Gallery3.jpg";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +41,11 @@ function Login() {
   useEffect(()=>{
     let user = JSON.parse(localStorage.getItem("user")) || false;
     if(user){
-      navigate("/home", { replace: true });
+      if(user.userType == "admin"){
+        navigate("/admin", { replace: true });
+      } else{
+        navigate("/home", { replace: true });
+      }
     }
   },[])
 
@@ -108,7 +113,7 @@ function Login() {
               className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
               style={{
                 backgroundImage:
-                  'url("https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg")'
+                  `url(${Gallery3})`
               }}
             ></div>
           </div>

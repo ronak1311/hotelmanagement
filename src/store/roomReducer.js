@@ -1,6 +1,7 @@
 const INITIAL_STATE = {
   rooms:[],
-  amenities:[]
+  amenities:[],
+  allRooms:[],
 }
 export const roomReducer = function (state = INITIAL_STATE , action) {
   switch (action.type) {
@@ -8,6 +9,8 @@ export const roomReducer = function (state = INITIAL_STATE , action) {
       return state = {...state,rooms:action.payload};
     case "setAmenities":
       return state ={...state,amenities:action.payload};
+      case "setAllRooms":
+        return state ={...state,allRooms:action.payload};
     default:
       return state;
   }

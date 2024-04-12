@@ -1,7 +1,7 @@
 import supabase, { supabaseUrl } from "./supabase";
 
 export async function getCabins() {
-    const { data, error } = await supabase.from("cabins").select("*");
+    const { data, error } = await supabase.from("room").select("*, roomType(*)");
 
     if (error) {
         console.error(error);
@@ -64,7 +64,7 @@ export async function createEditCabin(newCabin, id) {
 
 export async function deleteCabin(id) {
     const { data, error } = await supabase
-        .from('cabins')
+        .from('rooms')
         .delete()
         .eq('id', id)
 

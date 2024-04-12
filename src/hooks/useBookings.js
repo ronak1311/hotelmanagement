@@ -1,4 +1,5 @@
-import { getBookings as getbookingsAPI, updateBooking as updateBookingAPI,getCustomerAllBookings as getAllCustomerBookingsAPI} from "../services/apiBookings";
+import { getBookings as getbookingsAPI, updateBooking as updateBookingAPI,getCustomerAllBookings as getAllCustomerBookingsAPI,
+getSingleBooking as getSingleBookingAPI} from "../services/apiBookings";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import {useDispatch} from 'react-redux';
@@ -47,3 +48,21 @@ export function getAllCustomerBookings() {
 
     return { isLoading, getAllCustomerBooking }
 }   
+
+export function useSingleBooking() {
+    const dispatch = useDispatch()
+    const { isLoading, mutate: getSingleBookings } = useMutation({
+        mutationFn: ({reservationId}) => getSingleBookingAPI({reservationId}),
+        onSuccess: (bookings) => {
+            dispatch({ type: 'setSingleBooking', payload: bookings[0] })
+           
+        },
+        onError: (error) => {
+            console.error(error);
+            toast.error(error.message)
+        }
+    })
+
+    return { isLoading, getSingleBookings }
+} 
+

@@ -163,3 +163,15 @@ export async function getCustomerAllBookings({customerId}) {
 
     return data;
 }
+
+export async function getSingleBooking({reservationId}) {
+    const { data, error } = await supabase
+    .from('reservation')
+    .select(`*,room(*, roomType(*)), payment(*), reservationAdd-ons(*), signUp(*)`).eq("reservationId",reservationId );
+    
+    
+    if (error) {
+        throw new Error(error.message)
+    }
+    return data;
+}

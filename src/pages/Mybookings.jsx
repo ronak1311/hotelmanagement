@@ -147,7 +147,7 @@ const handleDeleteBooking = (bookingId) => {
                 </table>
                 {allbookings?.length === 0 &&
                   <p className="text-red-500 overflow-x-hidden flex items-center justify-center p-4">
-                    No booking found with the given filter.
+                    No booking found.
                   </p>
                 }
               </div>

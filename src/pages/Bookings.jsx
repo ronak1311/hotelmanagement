@@ -10,7 +10,6 @@ import StatusBadge from "../ui/StatusBadge";
 // import BookingsPagination from "../ui/BookingsPagination";
 import ConfirmBookingDeletion from "../ui/ConfirmBookingDeletion";
 import { useNavigate } from "react-router-dom";
-import { useCheckOut } from "../hooks/useCheckOut";
 import { useUpdateStatus } from "../hooks/useBookings";
 import { useDeleteBooking, useDeleteBookingAddOns } from "../hooks/useDeleteBooking";
 import { useEffect, useState } from "react";
@@ -19,7 +18,6 @@ import ConfirmCheckIn from "../ui/ConfirmCheckin";
 
 function Bookings() {
   const { isLoading, getBookings } = useBookings();
-  const { checkOut, isCheckingOut } = useCheckOut();
   const { isLoading : statusUpdateLoading, updateBookingStatus } = useUpdateStatus();
   const { isLoading: deleteLoading, deleteBooking } = useDeleteBooking();
   const { isLoading: deleteAddOnsLoading, deleteBookingAddOns } = useDeleteBookingAddOns();
@@ -67,6 +65,9 @@ getBookings()
   
   return (
     <>
+    <h1 className="text-3xl font-bold mb-4 justify-center text-center">
+            All Bookings
+          </h1>
       <div className="flex items-center justify-center bookingTable:mx-5">
         <div className="mb-4 relative overflow-x-auto shadow-md sm:rounded-t-lg mt-10">
           {/* <BookingStatusFilter /> */}
