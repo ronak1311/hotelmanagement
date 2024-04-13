@@ -1,7 +1,7 @@
 import supabase, { supabaseUrl } from "./supabase";
 
 export async function getCabins() {
-    const { data, error } = await supabase.from("room").select("*, roomType(*)");
+    const { data, error } = await supabase.from("room").select("*, roomType(*), amenities(*)");
 
     if (error) {
         console.error(error);
@@ -10,57 +10,81 @@ export async function getCabins() {
 
     return data;
 }
-
-export async function createEditCabin(newCabin, id) {
-
-    const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
-    const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
-        "/",
-        ""
-    );
-
-    const imagePath = hasImagePath ? newCabin.image : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
-
-    let query = supabase.from("cabins")
-
-    // Create a cabin
-    if (!id) {
-        query = query.insert([{ ...newCabin, image: imagePath }])
-    }
-
-    // Edit cabin
-    if (id) {
-        query = query
-            .update({ ...newCabin, image: imagePath })
-            .eq('id', id)
-    }
-
-    const { data, error } = await query.select().single();
+export async function createCabinType({roomTypeName,description,maxOccupancy}) {
+   
+    const { data, error } = await supabase
+    .from('roomType')
+    .insert({roomTypeName,description,maxOccupancy})
+    .select()
+        
 
     if (error) {
         console.error(error);
-        throw new Error("Cabins could not be created" + error);
+        throw new Error("Cabins could not be loaded");
     }
-
-    if (hasImagePath) return data;
-
-    // Upload image
-    const { error: storageError } = await supabase
-        .storage
-        .from('cabin-images')
-        .upload(imageName, newCabin.image)
-
-    if (storageError) {
-        await supabase
-            .from('cabins')
-            .delete()
-            .eq('id', data.id)
-        console.error(storageError);
-        throw new Error("Cabins image could not be uploaded & cabin was not created");
-    }
-
     return data;
 }
+export async function createCabin({roomNumber,pricePerNight,roomTypeId}) {
+   
+    const { data, error } = await supabase
+    .from('room')
+    .insert({roomNumber,pricePerNight,roomTypeId})
+    .select()
+        
+
+    if (error) {
+        console.error(error);
+        throw new Error("Cabins could not be loaded");
+    }
+    return data;
+}
+export async function createCabinAmenities({amenities}) {
+console.log('✌️amenities API --->', amenities);
+   
+    const { data, error } = await supabase
+    .from('roomAmenities')
+    .insert(amenities)
+    .select()
+
+    if (error) {
+        console.error(error);
+        throw new Error(error);
+    }
+    return data;
+}
+
+export async function editCabinType({roomTypeName,description,maxOccupancy,roomTypeId}) {
+   
+    const { data, error } = await supabase
+    .from('roomType')
+    .update([roomTypeName,description,maxOccupancy])
+    .eq('roomTypeId',roomTypeId)
+    .select()
+        
+
+    if (error) {
+        console.error(error);
+        throw new Error("Cabins could not be loaded");
+    }
+    return data;
+}
+export async function editCabin({roomTypeName,description,maxOccupancy,roomTypeId}) {
+   
+    const { data, error } = await supabase
+    .from('room')
+    .update([roomNumber,pricePerNight])
+    .eq('roomId',roomId)
+    .select()
+        
+
+    if (error) {
+        console.error(error);
+        throw new Error("Cabins could not be loaded");
+    }
+    return data;
+}
+
+
 
 export async function deleteCabin(id) {
     const { data, error } = await supabase

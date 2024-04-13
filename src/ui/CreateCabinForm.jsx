@@ -1,50 +1,113 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import { useForm } from "react-hook-form";
-import { useCreateCabin } from "../hooks/useCreateCabin";
-import { useEditCabin } from "../hooks/useEditCabin";
-import { useEffect } from "react"
+import { useCreateRooms, useEditCabin, useCreateRoomsType, useCreateRoomsAmenities } from "../hooks/useCabin";
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import Select from "react-tailwindcss-select";
+import { useNavigate } from "react-router-dom";
+
 import('preline')
 
-function CreateCabinForm({ editingCabin, editingMode }) {
+function CreateCabinForm({ editingCabin, editingMode, onCancel }) {
 
     const { register, handleSubmit, reset, getValues, formState, setValue } = useForm();
 
-    const { isAdding, createCabin } = useCreateCabin();
-    const { isEditing, editCabin } = useEditCabin();
-
+    const { isLoading:isAdding, createRoom } = useCreateRooms();
+    const { isLoading:isRoomTpeLoading, createRoomType } = useCreateRoomsType();
+    const { isLoading: isEditing, editRoom } = useEditCabin();
+    const { isLoading: isAmenities, createRoomAmenities } = useCreateRoomsAmenities();
+    const [addOnsForRoom, setAddOnsForRoom] = useState(null);
     const { errors } = formState;
+    const navigate = useNavigate();
+    const allAmenities = useSelector((state) => state.addOnsReducer.allAmenities);
+    const filterdAmeniteis = allAmenities?.filter((item) => {
+        return ({
+            Name: item.name,
+            amenitiesId: item.amenitiesId,
+            created_at: item.created_at,
+        }
+    );
+});
+const roomAddOnList = filterdAmeniteis
+? filterdAmeniteis.map((item) => {
+    return { value: `${item.name}`, label: `${item.name}`, id: item.amenitiesId };
+})
+: [];
+
+const handleChange = (value) => {
+    setAddOnsForRoom(value);
+    console.log('✌️addOnsForRoom --->', addOnsForRoom);
+      };
+
 
     useEffect(() => {
         if (editingMode) {
-            setValue('name', editingCabin.name);
-            setValue('maxCapacity', editingCabin.maxCapacity);
-            setValue('regularPrice', editingCabin.regularPrice);
-            setValue('discount', editingCabin.discount);
-            setValue('description', editingCabin.description);
-            setValue('image', editingCabin.image);
+            if(editingCabin?.amenities && editingCabin?.amenities.length > 0 ){
+                const fa = editingCabin?.amenities.filter((item) => {
+                    return ({
+                        Name: item.name,
+                        amenitiesId: item.amenitiesId,
+                        created_at: item.created_at,
+                    }
+                );
+            });
+            const al = fa
+                ? fa.map((item) => {
+                    return { value: `${item.name}`, label: `${item.name}`, id: item.amenitiesId };
+                })
+                : [];
+
+            setAddOnsForRoom(al);
+            }
+            setValue('roomTypeName', editingCabin?.roomType?.roomTypeName);
+            setValue('maxOccupancy', editingCabin?.roomType?.maxOccupancy);
+            setValue('pricePerNight', editingCabin.pricePerNight);
+            setValue('roomNumber', editingCabin?.roomNumber);
+            setValue('description', editingCabin?.roomType?.description);
+            // setAddOnsForRoom()
+            // setValue('image', editingCabin.image);
         } else {
-            setValue('name', '');
-            setValue('maxCapacity', '');
-            setValue('regularPrice', '');
-            setValue('discount', '');
+            setValue('roomTypeName', '');
+            setValue('maxOccupancy', '');
+            setValue('pricePerNight', '');
+            setValue('roomNumber', '');
             setValue('description', '');
-            setValue('image', []);
+            // setValue('image', []);
         }
     }, [editingMode, editingCabin, setValue]);
 
-    const isWorking = isAdding || isEditing;
+    const isWorking = isAdding || isEditing || isRoomTpeLoading;
 
     const onSubmitHandler = function (data) {
-        const image = typeof data.image === "string" ? data.image : data.image[0];
 
-        if (editingMode) editCabin({ newCabinData: { ...data, image: image }, id: editingCabin.id }, {
+        if (editingMode) editRoom({ newCabinData: { ...data }, id: editingCabin.id }, {
             onSuccess: () => {
                 reset();
             }
         });
-        else createCabin({ ...data, image: image }, {
-            onSuccess: () => {
-                reset();
-            }
+        else createRoomType({roomTypeName: data.roomTypeName,description: data.description,maxOccupancy:data.maxOccupancy}, {
+            onSettled:typedata=>{
+                createRoom({roomNumber:data.roomNumber,pricePerNight:data.pricePerNight,roomTypeId:typedata[0].roomTypeId},{
+                    onSettled:(data)=>{
+                        if(addOnsForRoom.length>0){
+                            let amenities = addOnsForRoom.map((item)=> { return{roomID:data[0].roomId,amenitiesId:item.id}})
+                            createRoomAmenities({amenities})
+                            reset();
+                            navigate("/admin/cabins")
+                            onCancel()
+                            toast.success("Room Added")
+                        }else{
+                            reset();
+                            onCancel()
+                            toast.success("Room Added")
+                        }
+                        
+                    }
+                })
+                      
+              }
         });
     }
 
@@ -68,7 +131,7 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                         {/* Form Group */}
                                         <div>
                                             <label
-                                                htmlFor="name"
+                                                htmlFor="roomTypeName"
                                                 className="block text-sm mb-2 dark:text-white"
                                             >
                                                 Cabin name
@@ -77,9 +140,9 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                 <input
                                                     disabled={isWorking}
                                                     type="text"
-                                                    id="name"
-                                                    name="name"
-                                                    {...register("name", {
+                                                    id="roomTypeName"
+                                                    name="roomTypeName"
+                                                    {...register("roomTypeName", {
                                                         required: "This field is required"
                                                     })}
                                                     className="disabled:cursor-not-allowed py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
@@ -96,14 +159,14 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                                                     </svg>
                                                 </div>
-                                                {errors?.name?.message && <p className="text-red-600 mt-3">{errors.name.message}</p>}
+                                                {errors?.roomTypeName?.message && <p className="text-red-600 mt-3">{errors.roomTypeName.message}</p>}
                                             </div>
                                         </div>
                                         {/* End Form Group */}
                                         {/* Form Group */}
                                         <div>
                                             <label
-                                                htmlFor="maxCapacity"
+                                                htmlFor="maxOccupancy"
                                                 className="block text-sm mb-2 dark:text-white"
                                             >
                                                 Maximum capacity
@@ -112,9 +175,9 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                 <input
                                                     disabled={isWorking}
                                                     type="number"
-                                                    id="maxCapacity"
-                                                    name="maxCapacity"
-                                                    {...register("maxCapacity", {
+                                                    id="maxOccupancy"
+                                                    name="maxOccupancy"
+                                                    {...register("maxOccupancy", {
                                                         required: "This field is required",
                                                         min: {
                                                             value: 1,
@@ -135,14 +198,14 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                                                     </svg>
                                                 </div>
-                                                {errors?.maxCapacity?.message && <p className="text-red-600 mt-3">{errors.maxCapacity.message}</p>}
+                                                {errors?.maxOccupancy?.message && <p className="text-red-600 mt-3">{errors.maxOccupancy.message}</p>}
                                             </div>
                                         </div>
                                         {/* End Form Group */}
                                         {/* Form Group */}
                                         <div>
                                             <label
-                                                htmlFor="regularPrice"
+                                                htmlFor="pricePerNight"
                                                 className="block text-sm mb-2 dark:text-white"
                                             >
                                                 Regular Price
@@ -151,9 +214,9 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                 <input
                                                     disabled={isWorking}
                                                     type="number"
-                                                    id="regularPrice"
-                                                    name="regularPrice"
-                                                    {...register("regularPrice", {
+                                                    id="pricePerNight"
+                                                    name="pricePerNight"
+                                                    {...register("pricePerNight", {
                                                         required: "This field is required"
                                                     })}
                                                     className="disabled:cursor-not-allowed py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
@@ -171,28 +234,26 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                                                     </svg>
                                                 </div>
-                                                {errors?.regularPrice?.message && <p className="text-red-600 mt-3">{errors.regularPrice.message}</p>}
+                                                {errors?.pricePerNight?.message && <p className="text-red-600 mt-3">{errors.pricePerNight.message}</p>}
                                             </div>
                                         </div>
                                         {/* End Form Group */}
                                         {/* Form Group */}
                                         <div>
                                             <label
-                                                htmlFor="discount"
+                                                htmlFor="roomNumber"
                                                 className="block text-sm mb-2 dark:text-white"
                                             >
-                                                Discount
+                                                Room Number
                                             </label>
                                             <div className="relative">
                                                 <input
                                                     disabled={isWorking}
                                                     type="number"
-                                                    id="discount"
-                                                    name="discount"
-                                                    {...register("discount", {
-                                                        required: "This field is required",
-                                                        validate: (value) =>
-                                                            value <= getValues().regularPrice || "Discount should be less than regular price"
+                                                    id="roomNumber"
+                                                    name="roomNumber"
+                                                    {...register("roomNumber", {
+                                                        required: "This field is required"
                                                     })}
                                                     className="disabled:cursor-not-allowed py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
                                                 />
@@ -208,7 +269,7 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
                                                     </svg>
                                                 </div>
-                                                {errors?.discount?.message && <p className="text-red-600 mt-3">{errors.discount.message}</p>}
+                                                {errors?.roomNumber?.message && <p className="text-red-600 mt-3">{errors.roomNumber.message}</p>}
                                             </div>
                                         </div>
                                         {/* End Form Group */}
@@ -245,9 +306,51 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div>
+                                            <label
+                                                htmlFor="amenities"
+                                                className="block text-sm mb-2 dark:text-white"
+                                            >
+                                                Amenities
+                                            </label>
+                                            <div className="relative">
+                                            <Select
+                                                value={addOnsForRoom}
+                                                onChange={handleChange}
+                                                options={roomAddOnList}
+                                                isMultiple={true}
+                                                placeholder="Room Add Ons"
+                                                classNames={{
+                                                    menu: "absolute z-10 w-full bg-white shadow-lg border rounded py-1 mt-1.5 text-smtext-black-500",
+                                                    listItem: ({ isSelected }) =>
+                                                    `block transition duration-200 px-2 py-2 cursor-pointer select-none truncate rounded ${
+                                                        isSelected
+                                                        ? `text-white bg-blue-500`
+                                                        : `text-black-500 hover:bg-blue-100 hover:text-blue-500`
+                                                    }`,
+                                                }}
+                                  // classNames="block w-full rounded-md border-0 py-1.5 text-black-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                />
+                                                
+                                                <div className="hidden absolute inset-y-0 right-0 flex items-center pointer-events-none pr-3">
+                                                    <svg
+                                                        className="h-5 w-5 text-red-500"
+                                                        width={16}
+                                                        height={16}
+                                                        fill="currentColor"
+                                                        viewBox="0 0 16 16"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                                                    </svg>
+                                                </div>
+                                                {errors?.roomNumber?.message && <p className="text-red-600 mt-3">{errors.roomNumber.message}</p>}
+                                            </div>
+                                        </div>
                                         {/* End Form Group */}
                                         {/* Form Group */}
-                                        <div>
+                                        {/* <div>
                                             <label htmlFor="image" className="block text-sm mb-2 dark:text-white">
                                                 Cabin photo
                                             </label>
@@ -277,7 +380,7 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                                 </div>
                                                 {errors?.image?.message && <p className="text-red-600 mt-3">{errors.image.message}</p>}
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <button
                                             disabled={isWorking}
@@ -288,6 +391,7 @@ function CreateCabinForm({ editingCabin, editingMode }) {
                                         </button>
                                         <button
                                             type="reset"
+                                            onClick={()=> onCancel()}
                                             className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
                                         >
                                             Cancel

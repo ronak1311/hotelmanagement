@@ -50,7 +50,19 @@ export async function getAddOns() {
   }
   return data;
   }
+  export async function getAmenities() {
+    const { data, error } = await supabase
+    .from('amenities')
+    .select(`*`);
+    
+    
+    if (error) {
+        throw new Error(error.message)
+    }
+    return data;
+    }
 
+    
   export async function addPayment({amount}) {
     const { data: data, error: error } = await supabase
     .from('payment')

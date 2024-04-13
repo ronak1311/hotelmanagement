@@ -117,7 +117,7 @@ function Header() {
                     className={({ isActive }) =>
                       isActive ? "flex px-[0.75rem] font-medium py-2 text-blue-600 hover:text-blue-700" : "flex px-[0.75rem] py-2 font-medium text-gray-500 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500"
                     }
-                    to="/cabins"
+                    to="/admin/cabins"
                     aria-current="page"
                   >
                     Cabins

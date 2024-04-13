@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useMutation } from "@tanstack/react-query";
-import { getAddOns, getRooms as getRoomAPI } from "../services/apiRooms";
+import { getAddOns, getRooms as getRoomAPI, getAmenities as getAmenitiesAPI } from "../services/apiRooms";
 import { getReservation as getReservationAPI } from "../services/apiRooms";
 import { addUser as addUserAPI } from "../services/apiRooms";
 import { addPayment as addPaymentAPI } from "../services/apiRooms";
@@ -99,4 +99,22 @@ export function useSetReservation() {
         }
     })
     return { isLoading, addUser, addPayment, addReservation, addReservationAddOns }
+}
+export function useGetAmenities() {
+    const dispatch = useDispatch()
+    const { isLoading, mutate: getAmenities } = useMutation({
+        mutationFn: () => getAmenitiesAPI(),
+
+        onSuccess: (amenities) => {
+            dispatch({ type: 'setAllAmenities', payload: amenities })
+           
+        },
+
+        onError: (error) => {
+            console.error(error);
+            toast.error(error.message)
+        }
+    })
+
+    return { isLoading, getAmenities }
 }

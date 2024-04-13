@@ -1,14 +1,21 @@
+/* eslint-disable no-unused-vars */
 import Spinner from "../ui/Spinner";
-// import CreateCabinForm from "./CreateCabinForm";
+import CreateCabinForm from "./CreateCabinForm";
 import { useEffect, useState } from "react";
 import { useGetRooms,useDeleteRooms, useCreateRooms  } from "../hooks/useCabin";
 import { useSearchParams } from "react-router-dom";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-// import FilterCabinDiscount from "./FilterCabinDiscount";
-// import SortBy from "./SortBy";
+import {  useGetAmenities} from "../hooks/useRoom";
 import NoData from "./NoData";
 import { useSelector } from "react-redux";
-
+import R1 from "../assets/R1.jpg";
+import R3 from "../assets/R3.jpg";
+import R2 from "../assets/R2.jpg";
+import R4 from "../assets/R4.jpg";
+import R5 from "../assets/R1.jpg";
+import R6 from "../assets/R3.jpg";
+import R7 from "../assets/R2.jpg";
+import R8 from "../assets/R4.jpg";
 function Table() {
     const [showForm, setShowForm] = useState(false);
     const [showDeleteForm, setShowDeleteForm] = useState(false);
@@ -16,7 +23,7 @@ function Table() {
     const [cabinId, setCabinId] = useState(null);
     const [editingMode, setEditingMode] = useState(false);
     const [searchParams] = useSearchParams();
-
+    const { isLoading:isAmenitiesLoading, getAmenities } = useGetAmenities();
     const [searchQuery, setSearchQuery] = useState("");
 
     const { isDeleting, deleteRooms } = useDeleteRooms();
@@ -26,10 +33,10 @@ function Table() {
     const searchedCabins = useSelector(
         (state) => state.roomReducer.allRooms
     );
-    console.log('✌️searchedCabins --->', searchedCabins);
 
       useEffect(()=>{
-        getRooms()
+        getRooms();
+        getAmenities();
       },[])
     // if (!cabins) {
     //     return <Spinner />;
@@ -82,7 +89,7 @@ function Table() {
     // if (!cabins.length) {
     //     return <NoData error="Cabins" />
     // }
-
+    const handleCancel = () => setShowForm(false);
     return (
         <>
             <div className="flex items-center justify-center mobile:mx-5">
@@ -120,7 +127,7 @@ function Table() {
                                 {searchedCabins.map((cabin) => (
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:border hover:bg-gray-50 dark:hover:bg-gray-600" key={cabin.id}>
                                         <td>
-                                            <img className="rounded w-20 m-4" src={cabin.image} alt="cabin image" />
+                                            <img className="rounded w-20 m-4" src={R3} alt="cabin image" />
                                         </td>
                                         <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
                                             {cabin?.roomType?.roomTypeName}
@@ -158,13 +165,13 @@ function Table() {
                                                     className="z-50 hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-[15rem] bg-white shadow-md rounded-lg p-2 mt-2 dark:bg-gray-800 dark:border dark:border-gray-700"
                                                     aria-labelledby="hs-dropdown-custom-icon-trigger"
                                                 >
-                                                    <button
+                                                    {/* <button
                                                         // onClick={() => handleDuplicateCabin(cabin)}
                                                         type="button"
                                                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                                                     >
                                                         Duplicate
-                                                    </button>
+                                                    </button> */}
                                                     <button
                                                         onClick={() => {
                                                             setEditingCabin(null);
@@ -178,7 +185,7 @@ function Table() {
                                                     >
                                                         Add
                                                     </button>
-                                                    <button
+                                                    {/* <button
                                                         onClick={() => {
                                                             setEditingCabin(cabin);
                                                             setShowForm(true);
@@ -202,7 +209,7 @@ function Table() {
                                                         className="disabled:cursor-not-allowed flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                                                     >
                                                         Delete
-                                                    </button>
+                                                    </button> */}
                                                 </div>
                                             </div>
                                         </td>
@@ -218,7 +225,7 @@ function Table() {
                     </div>
                 </div>
             </div >
-            {showForm && <CreateCabinForm editingCabin={editingCabin} editingMode={editingMode} />
+            {showForm && <CreateCabinForm editingCabin={editingCabin} editingMode={editingMode} onCancel={handleCancel}/>
             }
             {/* {showDeleteForm && <ConfirmDeleteModal isDeleting={isDeleting} onDeleteCabin={handleDeleteCabin} cabinId={cabinId} />} */}
         </>
