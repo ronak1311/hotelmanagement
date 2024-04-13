@@ -14,8 +14,6 @@ export function useLogin() {
            localStorage.setItem("user",JSON.stringify(user));
 
             toast.success("You've been successfully logged in");
-            
-            console.log('✌️!user.from && !user.from =="room" --->',user.from, user.from && user.from =="room");
             if(user.from && user.from =="login"){
                 navigate("/", { replace: true });
             }

@@ -28,9 +28,9 @@ const { data: bookings, error } = await supabase
   .gte('checkInDate', checkInDate)
   .lte('checkOutDate', checkOutDate)
 
-const availableRooms = allRooms?.filter(room => room.roomType.maxOccupancy >= maxOccupancy);
+// const availableRooms = allRooms?.filter(room => room.roomType.maxOccupancy >= maxOccupancy);
 
-const finalAvailableRooms = availableRooms?.filter(room => !bookings.some(booking => (booking.roomId === room.roomId )));
+const finalAvailableRooms = allRooms?.filter(room => !bookings.some(booking => (booking.roomId === room.roomId )));
 
 console.log('Available rooms:', finalAvailableRooms);
 if (error) {

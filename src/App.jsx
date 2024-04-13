@@ -16,6 +16,7 @@ import Mybookings from "./pages/Mybookings.jsx";
 import Signout from "./pages/Signout.jsx";
 import SingleBooking from "./pages/SingleBooking.jsx";
 import Cabins from "./pages/Cabins.jsx";
+import AboutUs from "./pages/Aboutus.jsx";
 // import SingleBooking from "./pages/SingleBooking.jsx";
 
 const queryClient = new QueryClient({
@@ -49,6 +50,7 @@ function App() {
                     <Route path="/rooms" element={<Rooms />} />
                     <Route path="/mybookings" element={<Mybookings />} />
                     <Route path="/logout" element={<Signout />} />
+                    <Route path="aboutus" element={<AboutUs />} />
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="*" element={<PageNotFound />} />

@@ -3,6 +3,7 @@ import Gallery1 from "../assets/Gallery1.jpg";
 import Gallery2 from "../assets/Gallery2.jpg";
 import Gallery3 from "../assets/Gallery3.jpg";
 import Gallery4 from "../assets/Gallery4.jpg";
+import Gallery5 from "../assets/Gallery5.jpg";
 function GalleryCarousel(){
     return(
         <Carousel
@@ -39,7 +40,12 @@ function GalleryCarousel(){
               className="h-screen w-full object-cover"
             />
             <img
-              src={Gallery4}
+              src={Gallery4}  
+              alt="image 1"
+              className="h-screen w-full object-cover"
+            />
+            <img
+              src={Gallery5}
               alt="image 1"
               className="h-screen w-full object-cover"
             />
