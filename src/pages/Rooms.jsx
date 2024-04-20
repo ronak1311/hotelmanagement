@@ -274,7 +274,25 @@ useEffect(()=>{
 
   const renderBookingForm = () =>{
     return(
-      <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+        <div className="sm:col-span-3">
+              <label className="block text-sm font-medium leading-6 text-gray-900">Check-in Date:</label>
+              <DatePicker
+                selected={startDate}
+                onChange={handleStartDateChange}
+                minDate={new Date()}
+                className="border border-gray-300 rounded px-3 py-2"
+              />
+        </div>
+        <div className="sm:col-span-3">
+        <label className="block text-sm font-medium leading-6 text-gray-900">Check-out Date:</label>
+              <DatePicker
+                selected={endDate}
+                onChange={handleEndDateChange}
+                minDate={startDate}
+                className="border border-gray-300 rounded px-3 py-2"
+              />
+        </div>
                             <div className="sm:col-span-3">
                               <label
                                 htmlFor="firstName"
@@ -286,6 +304,7 @@ useEffect(()=>{
                                 <input
                                   type="text"
                                   name="firstName"
+                                  required
                                   value={
                                     user && user.firstName ? user.firstName : firstName
                                   }
@@ -309,6 +328,7 @@ useEffect(()=>{
                                 <input
                                   type="text"
                                   name="lastName"
+                                  required
                                   value={
                                     user && user.lastName ? user.lastName : lastName
                                   }
@@ -332,6 +352,7 @@ useEffect(()=>{
                                 <input
                                   type="text"
                                   name="email"
+                                  required
                                   value={user && user.email ? user.email : email}
                                   onChange={(e) => setEmail(e.target.value) }
                                   disabled={user && user.email}
@@ -372,6 +393,7 @@ useEffect(()=>{
                                 <input
                                   type="text"
                                   name="phoneNumber"
+                                  required
                                   onChange={(e) => setPhoneNumber(e.target.value) }
                                   value={
                                     user && user.phoneNumber
@@ -397,6 +419,7 @@ useEffect(()=>{
                                 <input
                                   type="text"
                                   name="Address"
+                                  required
                                   onChange={(e) => setAddress(e.target.value) }
                                   value={
                                     user && user.address ? user.address : address
@@ -419,6 +442,7 @@ useEffect(()=>{
                               <div className="mt-2">
                                 <select
                                   id="numberOfPeople"
+                                  required
                                   name="numberOfPeople"
                                   onChange={e => setNumberofPeople(parseInt(e.target.value)) }
                                   autoComplete="numberOfPeople"
@@ -446,6 +470,7 @@ useEffect(()=>{
                                 <select
                                   id="numberOfChildren"
                                   name="numberOfChildren"
+                                  required
                                   onChange={e => setNumberOfChildren(parseInt(e.target.value)) }
                                   autoComplete="numberOfChildren"
                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -593,7 +618,7 @@ useEffect(()=>{
       {open ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            <div className="relative w-3/6 my-6 mx-auto max-w-4/5">
+            <div className="relative w-3/6 mt-8 mx-auto max-w-4/5">
               {/*content*/}
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none overflow-hidden">
                 {/*header*/}
@@ -613,7 +638,7 @@ useEffect(()=>{
                   <form>
                     <div className="space-y-12">
                       <div className="border-b border-gray-900/10 pb-12">
-                      {isPaymentPage ? <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                      {isPaymentPage ? <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                         <h2> Booking Confirmed !!</h2>
                         </div>:null}

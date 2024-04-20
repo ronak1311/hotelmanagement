@@ -39,7 +39,7 @@ const handleBookButton =() =>{
       </div>
 
       <div className="text-center mt-8">
-        <h1 className="text-3xl font-bold">Why choouse us</h1>
+        <h1 className="text-3xl font-bold">Why choose us</h1>
       </div>
 
         <div className="flex flex-wrap justify-center mt-8">

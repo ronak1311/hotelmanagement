@@ -4,7 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from "../assets/logo.png"
 import { Button } from 'flowbite-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+let user = JSON.parse(localStorage.getItem("user")) || false;
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
@@ -19,20 +19,29 @@ const navigation2 = [
   // { name: 'Calendar', href: '#', current: false },
   // { name: 'Reports', href: '#', current: false },
 ]
-const userNavigation = [
-  { name: 'Your Bookings', href: '/mybookings' },
-  { name: 'Sign out', href: '/logout' },
-]
+let userNavigation=[];
+if (user && user.userType == "admin"){
+  userNavigation = [
+    { name: 'Your Bookings', href: '/mybookings' },
+    {name: 'Admin Panel', href:'/admin'},
+    { name: 'Sign out', href: '/logout' },
+  ]
+}else{
+  userNavigation = [
+    { name: 'Your Bookings', href: '/mybookings' },
+    { name: 'Sign out', href: '/logout' },
+  ]
+}
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Example() {
-let userData = JSON.parse(localStorage.getItem("user")) || false;
+  let userData = JSON.parse(localStorage.getItem("user")) || false;
 const navigate = useNavigate()
 const location = useLocation();
-console.log('✌️location --->', location);
   return (
     <>
         <Disclosure as="nav" className="bg-gray-800 h-100 min-h-24 ">
