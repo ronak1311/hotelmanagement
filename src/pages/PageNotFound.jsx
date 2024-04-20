@@ -35,7 +35,7 @@ function PageNotFound() {
             >
               Go back
             </button>
-            <a href="https://github.com/itsteatv" target="_blank" rel="noreferrer" className="block py-2 px-4 text-black hover:bg-gray-50 font-medium duration-150 active:bg-gray-100 border rounded-lg dark:text-white">
+            <a href="https://ronakgandhi.surge.sh/" target="_blank" rel="noreferrer" className="block py-2 px-4 text-black hover:bg-gray-50 font-medium duration-150 active:bg-gray-100 border rounded-lg dark:text-white">
               Contact support
             </a>
           </div>

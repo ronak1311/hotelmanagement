@@ -182,16 +182,60 @@ useEffect(()=>{
       return(
         <>
      
-        <h6>Room : {currentBookingRoom.pricePerNight * numberofDays} for {numberofDays} days</h6>
-        <h6>Room Add Ons : {totalRoomAddons * numberofDays} for {numberofDays} days</h6>
-        <h6>Extra Add Ons : {totalExtraAddons * numberofDays} for {numberofDays} days</h6>
+        <h6>Room : ${currentBookingRoom.pricePerNight * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
+        <h6>Room Add Ons : ${totalRoomAddons * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
+        <h6>Extra Add Ons : ${totalExtraAddons * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
         <hr/>
-        <h5>Total Price : {totalPriceForBooking * numberofDays}</h5>
+        <h5>Total Price : ${totalPriceForBooking * numberofDays}</h5>
         </>
       )
   }
 
-  const handleBooking = () =>{
+  const handleBooking = (e) =>{
+    e.preventDefault();
+    let isError = false;
+    if(firstName == ""){
+      toast.error("First Name is Required");
+      isError = true;
+    }
+    if(lastName == ""){
+      toast.error("Last Name is Required");
+      isError = true;
+    }
+    if(email == ""){
+      isError = true;
+      toast.error("Email  is Required");
+    }
+    if(phoneNumber == ""){
+      isError = true;
+      toast.error("Phonenumber is Required");
+    }
+    if(address == ""){
+      isError = true;
+      toast.error("Address is Required");
+    }
+    if(isError) return;
+    const emailregex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailregex.test(email)) {
+       toast.error("Email must be in xyz@abc.com") 
+       return;
+      }
+
+    const firstNameRegex = /^[a-zA-Z]+$/;
+    if(!firstNameRegex.test(firstName)){
+      toast.error("Firstname contains only Alphabates")
+      isError =  true;
+    }
+    if(!firstNameRegex.test(lastName)){
+      toast.error("Lastname contains only Alphabates")
+      isError =  true;
+    }
+    const phoneRegex = /^\+1\d{10}$/;
+    if(!phoneRegex.test(phoneNumber)) {
+      toast.error("Phonenumber must be in +1XXXXXXXXXX Format");
+      isError = true;
+    }
+    if(isError) return;
     let totalPriceForBooking = currentBookingRoom.pricePerNight;
     let totalRoomAddons = 0;
     let totalExtraAddons = 0;
@@ -230,12 +274,23 @@ useEffect(()=>{
                   onSettled:data=>{
                     setIsRoomBooking(false);
                     setPaymentPage(true);
-                          
+                    getReservation({
+                      checkInDate: new Date().toISOString().substring(0, 10),
+                      checkOutDate: new Date().toISOString().substring(0, 10),
+                      maxOccupancy: persons,
+                    });
+                    getAddons();
                   }
                   })
               }else{
                 setIsRoomBooking(false);
                     setPaymentPage(true);
+                    getReservation({
+                      checkInDate: new Date().toISOString().substring(0, 10),
+                      checkOutDate: new Date().toISOString().substring(0, 10),
+                      maxOccupancy: persons,
+                    });
+                    getAddons();
               }
              
           }
@@ -245,6 +300,36 @@ useEffect(()=>{
         
   }
 
+const renderPaymentConfirmation = () =>{
+  let numberofDays = calculateNightStay(startDate, endDate);
+  if (numberofDays <=0) numberofDays = 1;
+   let totalPriceForBooking = currentBookingRoom.pricePerNight;
+   let totalRoomAddons = 0;
+   let totalExtraAddons = 0;
+   addOnsForRoom && addOnsForRoom.forEach(element => {
+     totalRoomAddons += element.price;
+   });
+   addOnsForExtra && addOnsForExtra.forEach(element=>{
+     totalExtraAddons += element.price
+   });
+   totalPriceForBooking = totalPriceForBooking + totalExtraAddons + totalRoomAddons;
+   return(
+     <>
+     <div className="sm:col-span-3 md:col-span-3">
+      <h2>Thank  you for Payment</h2>
+      <h3>Your Booking is Confirmed!!</h3>
+      <br/>
+      <h3> Your Booking Details </h3>
+      <hr/>
+     <h6>{currentBookingRoom.roomType.roomTypeName} :${currentBookingRoom.pricePerNight * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
+     <h6>Room Add Ons : ${totalRoomAddons * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
+     <h6>Extra Add Ons : ${totalExtraAddons * numberofDays} for {numberofDays} {numberofDays <=1 ? 'Day' : 'Days'}</h6>
+     <hr/>
+     <h5>Total Price : ${totalPriceForBooking * numberofDays}</h5>
+     </div>
+     </>
+   )
+}
  const renderAuthenticationOption = () =>{
     return(
       <div className="mt-0 ">
@@ -640,7 +725,7 @@ useEffect(()=>{
                       <div className="border-b border-gray-900/10 pb-12">
                       {isPaymentPage ? <div className="mt-1 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                        <h2> Booking Confirmed !!</h2>
+                      {renderPaymentConfirmation()}
                         </div>:null}
                         {isLogging && (
                          <div>
@@ -722,7 +807,7 @@ useEffect(()=>{
                       {
                         (user || loginStatus == "guest") && !isPaymentPage ?
                         <button
-                        type="button"
+                        type="submit"
                         onClick={handleBooking}
                         disabled={isRoomBooking}
                         className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
