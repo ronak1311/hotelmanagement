@@ -37,7 +37,10 @@ function Register() {
       toast.error("Email is required");
       isError = true;
     }
-
+    if(!address){
+      toast.error("Address is required");
+      isError = true;
+    }
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
          if(!regex.test(email)) {
           toast.error("Email must be in xyz@abc.com") 

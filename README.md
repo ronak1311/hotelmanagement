@@ -1,4 +1,7 @@
- 
+# About
+- The Hotel Booking Management System project involves the design, development, and testing of a web-based application tailored for efficient booking management and customer satisfaction. It covers various phases including high-level design, unit testing, integration testing, system testing, and acceptance testing to ensure functionality, performance, and security. 
+
+
 # Technologies Used:
 
 **1. ReactJS:**

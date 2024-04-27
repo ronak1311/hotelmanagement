@@ -47,6 +47,7 @@ function RoomCard({ rooms, isLoading, onBookingButton }) {
             <div className="text-lg font-bold mb-2">{rooms.roomType?.roomTypeName}</div>
             <div className="text-gray-700 mb-2">${rooms.pricePerNight} per night</div>
             <ul className="list-disc list-inside text-gray-700">{renderAmenities()}</ul>
+            <div className="text-gray-700 mb-2">Hurry!! 2 Rooms Left</div>
             <button onClick={()=> onBookingButton(rooms)} className="bottom-4 left-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300">
               Book Now
             </button>

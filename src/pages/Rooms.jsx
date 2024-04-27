@@ -88,6 +88,11 @@ function Rooms() {
       checkOutDate: new Date().toISOString().substring(0, 10),
       maxOccupancy: persons,
     });
+    if(user && user.firstName) setFirstName(user.firstName)
+    if(user && user.lastName) setLastName(user.lastName)
+    if(user && user.email) setEmail(user.email)
+    if(user && user.address) setAddress(user.address)
+    if(user && user.phoneNumber) setPhoneNumber(user.phoneNumber)
     getAddons();
   }, []);
 
@@ -230,11 +235,11 @@ useEffect(()=>{
       toast.error("Lastname contains only Alphabates")
       isError =  true;
     }
-    const phoneRegex = /^\+1\d{10}$/;
-    if(!phoneRegex.test(phoneNumber)) {
-      toast.error("Phonenumber must be in +1XXXXXXXXXX Format");
-      isError = true;
-    }
+    // const phoneRegex = /^\+1\d{10}$/;
+    // if(!phoneRegex.test(phoneNumber)) {
+    //   toast.error("Phonenumber must be in +1XXXXXXXXXX Format");
+    //   isError = true;
+    // }
     if(isError) return;
     let totalPriceForBooking = currentBookingRoom.pricePerNight;
     let totalRoomAddons = 0;
