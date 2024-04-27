@@ -1,4 +1,5 @@
 # About
+- This is Mini project i have developed during my study in conestoga for a specefic subject. 
 - The Hotel Booking Management System project involves the design, development, and testing of a web-based application tailored for efficient booking management and customer satisfaction. It covers various phases including high-level design, unit testing, integration testing, system testing, and acceptance testing to ensure functionality, performance, and security. 
 
 
